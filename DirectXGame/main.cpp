@@ -19,8 +19,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		if (KamataEngine::Update()) {
 			break;
 		}
+		gameScene->Update();
+
 		//Draw initiate
 		dxCommon->PreDraw();
+		
+		gameScene->Draw();
 		//Draw Cease
 		dxCommon->PostDraw();
 	}
