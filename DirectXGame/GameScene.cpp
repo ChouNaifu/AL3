@@ -29,6 +29,9 @@ void GameScene::Initialize() {
 	PrimitiveDrawer::GetInstance()->SetCamera(&camera_);
 
 	debugCamera_ = new DebugCamera(1280, 720);
+
+	AxisIndicator::GetInstance()->SetVisible(true);
+	AxisIndicator::GetInstance()->SetTargetCamera(&debugCamera_->GetCamera());
 }
 
 void GameScene::Update() {
@@ -68,6 +71,7 @@ void GameScene::Draw() {
 	// 3D Model Drawing
 	Model::PreDraw(dxCommon->GetCommandList());
 	//
+	//model_->Draw(worldTransform_, camera_, textureHandle_);
 	model_->Draw(worldTransform_, debugCamera_->GetCamera(), textureHandle_);
 	//
 	Model::PostDraw();
