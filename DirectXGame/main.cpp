@@ -10,6 +10,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	KamataEngine::Initialize(L"GC2A_07_チョウ_ナイーフ");
 	//DirectX Function Aquire
 	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
+
+	ImGuiManager* imguiManager = ImGuiManager::GetInstance();
+
 	//GameScene Initialize
 	GameScene* gameScene = new GameScene();
 	gameScene->Initialize();
@@ -19,12 +22,17 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		if (KamataEngine::Update()) {
 			break;
 		}
+		imguiManager->Begin();
 		gameScene->Update();
+		imguiManager->End();
 
 		//Draw initiate
 		dxCommon->PreDraw();
 		
 		gameScene->Draw();
+
+		imguiManager->Draw();
+
 		//Draw Cease
 		dxCommon->PostDraw();
 	}
