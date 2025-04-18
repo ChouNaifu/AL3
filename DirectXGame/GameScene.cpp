@@ -11,9 +11,12 @@ GameScene::~GameScene() {
 	model_ = nullptr;
 	delete debugCamera_;
 	debugCamera_ = nullptr;
+	delete player_;
+	player_ = nullptr;
 }
 
 void GameScene::Initialize() { 
+#pragma region Setup
 	textureHandle_ = TextureManager::Load("uvChecker.png"); 
 
 	soundDataHandle_ = Audio::GetInstance()->LoadWave("fanfare.wav");
@@ -32,9 +35,13 @@ void GameScene::Initialize() {
 
 	AxisIndicator::GetInstance()->SetVisible(true);
 	AxisIndicator::GetInstance()->SetTargetCamera(&debugCamera_->GetCamera());
+#pragma endregion
+	player_ = new Player();
+	player_->Initialize(model_, textureHandle_, &camera_);
 }
 
 void GameScene::Update() {
+#pragma region Update
 	Vector2 position = sprite_->GetPosition();
 	position.x += 2.0f;
 	position.y += 1.0f;
@@ -57,9 +64,14 @@ void GameScene::Update() {
 	debugCamera_->Update();
 
 #endif // DEBUG
+#pragma endregion Update
+#pragma region Player
+	player_->Update();
+#pragma endregion Player
 }
 
 void GameScene::Draw() {
+
 	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
 	// Drawing 2D Sprite
 	Sprite::PreDraw(dxCommon->GetCommandList());
@@ -73,7 +85,10 @@ void GameScene::Draw() {
 	//
 	//model_->Draw(worldTransform_, camera_, textureHandle_);
 	model_->Draw(worldTransform_, debugCamera_->GetCamera(), textureHandle_);
+	player_->Draw();
 	//
 	Model::PostDraw();
 	PrimitiveDrawer::GetInstance()->DrawLine3d({0, 0, 0}, {0, 10, 0}, {1, 0, 0, 1});
+
+	
 }
