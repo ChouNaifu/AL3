@@ -13,6 +13,14 @@ GameScene::~GameScene() {
 	debugCamera_ = nullptr;
 	delete player_;
 	player_ = nullptr;
+	delete blockModel_;
+	blockModel_ = nullptr;
+	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+			delete worldTransformBlock;
+		}
+	}
+	worldTransformBlocks_.clear();
 }
 
 void GameScene::Initialize() { 
@@ -26,6 +34,8 @@ void GameScene::Initialize() {
 
 	sprite_ = Sprite::Create(textureHandle_, {100, 50});
 	model_ = Model::Create();
+	blockModel_ = Model::CreateFromOBJ("cube", true);
+	
 	worldTransform_.Initialize();
 	camera_.Initialize();
 
@@ -38,6 +48,23 @@ void GameScene::Initialize() {
 #pragma endregion
 	player_ = new Player();
 	player_->Initialize(model_, textureHandle_, &camera_);
+
+	const uint32_t kNumBlockHorizontal = 20;
+	const uint32_t kNumBlockVirtical = 10;
+	const float kBlockWidth = 2.0f;
+	const float kBlockHeight = 2.0f;
+	worldTransformBlocks_.resize(kNumBlockVirtical);
+	for (uint32_t i = 0; i < kNumBlockVirtical; i++) {
+		worldTransformBlocks_[i].resize(kNumBlockHorizontal);
+	}
+	for (uint32_t i = 0; i < kNumBlockVirtical; i++) {
+		for (uint32_t j = 0; j < kNumBlockHorizontal; j++) {		
+			worldTransformBlocks_[i][j] = new WorldTransform();
+			worldTransformBlocks_[i][j]->Initialize();
+			worldTransformBlocks_[i][j]->translation_.x = j * kBlockWidth;
+			worldTransformBlocks_[i][j]->translation_.y = i * kBlockHeight;
+		}
+	}
 }
 
 void GameScene::Update() {
@@ -53,6 +80,14 @@ void GameScene::Update() {
 	if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
 		Audio::GetInstance()->StopWave(voiceHandle_);
 	}
+
+	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+			worldTransformBlock->MakeAffineMatrix();
+			worldTransformBlock->TransferMatrix();
+		}
+	}
+
 #ifdef _DEBUG
 	ImGui::Begin("Debug1");
 	ImGui::Text("Chou nobu %d %d %d", 2050, 12, 32);
@@ -86,9 +121,16 @@ void GameScene::Draw() {
 	//model_->Draw(worldTransform_, camera_, textureHandle_);
 	model_->Draw(worldTransform_, debugCamera_->GetCamera(), textureHandle_);
 	player_->Draw();
+
+	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+			blockModel_->Draw(*worldTransformBlock, debugCamera_->GetCamera());
+		}
+	}
 	//
 	Model::PostDraw();
 	PrimitiveDrawer::GetInstance()->DrawLine3d({0, 0, 0}, {0, 10, 0}, {1, 0, 0, 1});
 
 	
 }
+
