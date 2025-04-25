@@ -18,6 +18,7 @@ private:
 	uint32_t soundDataHandle_ = 0;
 	uint32_t voiceHandle_ = 0;
 	float inputFloat3[3] = {0.0f, 0.0f, 0.0f};
+	bool isDebugCameraActive_ = false;
 	std::vector < std::vector < KamataEngine::WorldTransform* >> worldTransformBlocks_;
 
 	KamataEngine::Sprite* sprite_ = nullptr;

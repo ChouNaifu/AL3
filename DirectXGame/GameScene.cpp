@@ -58,11 +58,15 @@ void GameScene::Initialize() {
 		worldTransformBlocks_[i].resize(kNumBlockHorizontal);
 	}
 	for (uint32_t i = 0; i < kNumBlockVirtical; i++) {
-		for (uint32_t j = 0; j < kNumBlockHorizontal; j++) {		
+		for (uint32_t j = 0; j < kNumBlockHorizontal; j++) {	
+			if ((i + j) % 2 == 1) {
+				continue;
+			}
 			worldTransformBlocks_[i][j] = new WorldTransform();
 			worldTransformBlocks_[i][j]->Initialize();
 			worldTransformBlocks_[i][j]->translation_.x = j * kBlockWidth;
 			worldTransformBlocks_[i][j]->translation_.y = i * kBlockHeight;
+
 		}
 	}
 }
@@ -83,6 +87,8 @@ void GameScene::Update() {
 
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+			if (!worldTransformBlock)
+				continue;
 			worldTransformBlock->MakeAffineMatrix();
 			worldTransformBlock->TransferMatrix();
 		}
@@ -95,8 +101,17 @@ void GameScene::Update() {
 	ImGui::SliderFloat3("SliderFloat %f %f", &(position.x), 0, 1000);
 	ImGui::ShowDemoWindow();
 	ImGui::End();
-
-	debugCamera_->Update();
+	if (Input::GetInstance()->TriggerKey(DIK_F1)) {
+		isDebugCameraActive_ = !isDebugCameraActive_;
+	}
+	if (isDebugCameraActive_) {
+		debugCamera_->Update();
+		camera_.matView = debugCamera_->GetCamera().matView;
+		camera_.matProjection = debugCamera_->GetCamera().matProjection;
+		camera_.TransferMatrix();
+	} else {
+		camera_.UpdateMatrix();
+	}
 
 #endif // DEBUG
 #pragma endregion Update
@@ -124,6 +139,8 @@ void GameScene::Draw() {
 
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+			if (!worldTransformBlock)
+				continue;
 			blockModel_->Draw(*worldTransformBlock, debugCamera_->GetCamera());
 		}
 	}
