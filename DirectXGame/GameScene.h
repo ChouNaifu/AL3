@@ -2,6 +2,7 @@
 #include <vector>
 #include "KamataEngine.h"
 #include "Player.h"
+#include "Skydome.h"
 
 class GameScene {
 public:
@@ -12,6 +13,7 @@ public:
 	void Update();
 	void Draw();
 	Player* player_ = nullptr;
+	Skydome* skydome_ = nullptr;
 
 private:
 	uint32_t textureHandle_ = 0u;

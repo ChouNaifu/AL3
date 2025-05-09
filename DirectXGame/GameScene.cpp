@@ -49,6 +49,9 @@ void GameScene::Initialize() {
 	player_ = new Player();
 	player_->Initialize(model_, textureHandle_, &camera_);
 
+	skydome_ = new Skydome();
+	skydome_->Initialize(&camera_);
+
 	const uint32_t kNumBlockHorizontal = 20;
 	const uint32_t kNumBlockVirtical = 10;
 	const float kBlockWidth = 2.0f;
@@ -102,7 +105,7 @@ void GameScene::Update() {
 	ImGui::ShowDemoWindow();
 	ImGui::End();
 	if (Input::GetInstance()->TriggerKey(DIK_F1)) {
-		isDebugCameraActive_ = !isDebugCameraActive_;
+		isDebugCameraActive_ ^= true;
 	}
 	if (isDebugCameraActive_) {
 		debugCamera_->Update();
@@ -118,6 +121,7 @@ void GameScene::Update() {
 #pragma region Player
 	player_->Update();
 #pragma endregion Player
+	skydome_->Update();
 }
 
 void GameScene::Draw() {
@@ -136,6 +140,7 @@ void GameScene::Draw() {
 	//model_->Draw(worldTransform_, camera_, textureHandle_);
 	model_->Draw(worldTransform_, debugCamera_->GetCamera(), textureHandle_);
 	player_->Draw();
+	skydome_->Draw();
 
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
