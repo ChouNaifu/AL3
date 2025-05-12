@@ -12,3 +12,8 @@ void WorldTransform::MakeAffineMatrix() {
 	Matrix4x4 translationMatrix = MakeTranslateMatrix(translation_);
 	matWorld_ = scaleMatrix * rotationXMatrix * rotationYMatrix * rotationZMatrix * translationMatrix;
 }
+
+void WorldTransform::UpdateMatrix() { 
+	MakeAffineMatrix();
+	TransferMatrix();
+}	

@@ -33,11 +33,12 @@ void GameScene::Initialize() {
 	voiceHandle_ = Audio::GetInstance()->PlayWave(soundDataHandle_, true);
 
 	sprite_ = Sprite::Create(textureHandle_, {100, 50});
-	model_ = Model::Create();
+	model_ = Model::CreateFromOBJ("robot", true);
 	blockModel_ = Model::CreateFromOBJ("cube", true);
 	
 	worldTransform_.Initialize();
 	camera_.Initialize();
+	//camera_.farZ = 500;
 
 	PrimitiveDrawer::GetInstance()->SetCamera(&camera_);
 
@@ -47,7 +48,7 @@ void GameScene::Initialize() {
 	AxisIndicator::GetInstance()->SetTargetCamera(&debugCamera_->GetCamera());
 #pragma endregion
 	player_ = new Player();
-	player_->Initialize(model_, textureHandle_, &camera_);
+	player_->Initialize(model_, 0, &camera_);
 
 	skydome_ = new Skydome();
 	skydome_->Initialize(&camera_);
@@ -62,7 +63,7 @@ void GameScene::Initialize() {
 	}
 	for (uint32_t i = 0; i < kNumBlockVirtical; i++) {
 		for (uint32_t j = 0; j < kNumBlockHorizontal; j++) {	
-			if ((i + j) % 2 == 1) {
+			if ((i + j) % 2 == 0) {
 				continue;
 			}
 			worldTransformBlocks_[i][j] = new WorldTransform();
@@ -77,9 +78,9 @@ void GameScene::Initialize() {
 void GameScene::Update() {
 #pragma region Update
 	Vector2 position = sprite_->GetPosition();
-	position.x += 2.0f;
-	position.y += 1.0f;
-	sprite_->SetPosition(position);
+	//position.x += 2.0f;
+	//position.y += 1.0f;
+	//sprite_->SetPosition(position);
 	//sprite_->SetScale({2.0f, 2.0f});
 	//sprite_->SetRotation(45.0f);
 	//sprite_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
@@ -130,7 +131,7 @@ void GameScene::Draw() {
 	// Drawing 2D Sprite
 	Sprite::PreDraw(dxCommon->GetCommandList());
 	//
-	sprite_->Draw();
+	//sprite_->Draw();
 	//
 	Sprite::PostDraw();
 
@@ -138,7 +139,7 @@ void GameScene::Draw() {
 	Model::PreDraw(dxCommon->GetCommandList());
 	//
 	//model_->Draw(worldTransform_, camera_, textureHandle_);
-	model_->Draw(worldTransform_, debugCamera_->GetCamera(), textureHandle_);
+	//model_->Draw(worldTransform_, debugCamera_->GetCamera(), textureHandle_);
 	player_->Draw();
 	skydome_->Draw();
 
