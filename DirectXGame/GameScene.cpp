@@ -15,6 +15,9 @@ GameScene::~GameScene() {
 	player_ = nullptr;
 	delete blockModel_;
 	blockModel_ = nullptr;
+	delete mapchipField_;
+	mapchipField_ = nullptr;
+
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			delete worldTransformBlock;
@@ -23,7 +26,11 @@ GameScene::~GameScene() {
 	worldTransformBlocks_.clear();
 }
 
+
+
 void GameScene::Initialize() { 
+
+	
 #pragma region Setup
 	textureHandle_ = TextureManager::Load("uvChecker.png"); 
 
@@ -53,24 +60,29 @@ void GameScene::Initialize() {
 	skydome_ = new Skydome();
 	skydome_->Initialize(&camera_);
 
-	const uint32_t kNumBlockHorizontal = 20;
-	const uint32_t kNumBlockVirtical = 10;
-	const float kBlockWidth = 2.0f;
-	const float kBlockHeight = 2.0f;
+	mapchipField_ = new Mapchip;
+	mapchipField_->LoadMapchipCsv("Resources/map/mapchip.csv");
+
+	GenerateMap();
+}
+
+void GameScene::GenerateMap() {
+	const uint32_t kNumBlockHorizontal = mapchipField_->GetNumBlockHorizontal();
+	const uint32_t kNumBlockVirtical = mapchipField_->GetNumBlockVertical();
+	// const float kBlockWidth = 2.0f;
+	// const float kBlockHeight = 2.0f;
 	worldTransformBlocks_.resize(kNumBlockVirtical);
 	for (uint32_t i = 0; i < kNumBlockVirtical; i++) {
 		worldTransformBlocks_[i].resize(kNumBlockHorizontal);
 	}
-	for (uint32_t i = 0; i < kNumBlockVirtical; i++) {
-		for (uint32_t j = 0; j < kNumBlockHorizontal; j++) {	
-			if ((i + j) % 2 == 0) {
-				continue;
+	for (uint32_t y = 0; y < kNumBlockVirtical; y++) {
+		for (uint32_t x = 0; x < kNumBlockHorizontal; x++) {
+			if (mapchipField_->GetMapchipTypeByIndex(x, y) == MapchipType::Wall) {
+				WorldTransform* worldTransform = new WorldTransform();
+				worldTransform->Initialize();
+				worldTransformBlocks_[y][x] = worldTransform;
+				worldTransformBlocks_[y][x]->translation_ = mapchipField_->GetMapchipPositionByIndex(x, y);
 			}
-			worldTransformBlocks_[i][j] = new WorldTransform();
-			worldTransformBlocks_[i][j]->Initialize();
-			worldTransformBlocks_[i][j]->translation_.x = j * kBlockWidth;
-			worldTransformBlocks_[i][j]->translation_.y = i * kBlockHeight;
-
 		}
 	}
 }
@@ -93,8 +105,7 @@ void GameScene::Update() {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			if (!worldTransformBlock)
 				continue;
-			worldTransformBlock->MakeAffineMatrix();
-			worldTransformBlock->TransferMatrix();
+			worldTransformBlock->UpdateMatrix();
 		}
 	}
 
@@ -124,7 +135,6 @@ void GameScene::Update() {
 #pragma endregion Player
 	skydome_->Update();
 }
-
 void GameScene::Draw() {
 
 	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
@@ -156,4 +166,6 @@ void GameScene::Draw() {
 
 	
 }
+
+
 

@@ -3,6 +3,7 @@
 #include "KamataEngine.h"
 #include "Player.h"
 #include "Skydome.h"
+#include "Mapchip.h"
 
 class GameScene {
 public:
@@ -12,8 +13,10 @@ public:
 	void Initialize();
 	void Update();
 	void Draw();
+	void GenerateMap();
 	Player* player_ = nullptr;
 	Skydome* skydome_ = nullptr;
+	Mapchip* mapchipField_ = nullptr;
 
 private:
 	uint32_t textureHandle_ = 0u;
