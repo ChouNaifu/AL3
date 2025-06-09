@@ -17,6 +17,8 @@ GameScene::~GameScene() {
 	blockModel_ = nullptr;
 	delete mapchipField_;
 	mapchipField_ = nullptr;
+	delete skydome_;
+	skydome_ = nullptr;
 
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
@@ -55,7 +57,8 @@ void GameScene::Initialize() {
 	AxisIndicator::GetInstance()->SetTargetCamera(&debugCamera_->GetCamera());
 #pragma endregion
 	player_ = new Player();
-	player_->Initialize(model_, 0, &camera_);
+	Vector3 playerPosition = mapchipField_->GetMapchipPositionByIndex(1, 9);
+	player_->Initialize(model_, &camera_, playerPosition);
 
 	skydome_ = new Skydome();
 	skydome_->Initialize(&camera_);
@@ -110,12 +113,12 @@ void GameScene::Update() {
 	}
 
 #ifdef _DEBUG
-	ImGui::Begin("Debug1");
-	ImGui::Text("Chou nobu %d %d %d", 2050, 12, 32);
-	ImGui::InputFloat3("InputFloat3", inputFloat3);
-	ImGui::SliderFloat3("SliderFloat %f %f", &(position.x), 0, 1000);
-	ImGui::ShowDemoWindow();
-	ImGui::End();
+	//ImGui::Begin("Debug1");
+	//ImGui::Text("Chou nobu %d %d %d", 2050, 12, 32);
+	//ImGui::InputFloat3("InputFloat3", inputFloat3);
+	//ImGui::SliderFloat3("SliderFloat %f %f", &(position.x), 0, 1000);
+	//ImGui::ShowDemoWindow();
+	//ImGui::End();
 	if (Input::GetInstance()->TriggerKey(DIK_F1)) {
 		isDebugCameraActive_ ^= true;
 	}

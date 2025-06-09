@@ -30,8 +30,8 @@ public:
 	void LoadMapchipCsv(const std::string& filePath);
 	MapchipType GetMapchipTypeByIndex(uint32_t xIndex, uint32_t yIndex);
 	KamataEngine::Vector3 GetMapchipPositionByIndex(uint32_t xIndex, uint32_t yIndex);
-	uint32_t GetNumBlockHorizontal() const { return kNumBlockHorizontal; }
-	uint32_t GetNumBlockVertical() const { return kNumBlockVertical; }
+	uint32_t GetNumBlockHorizontal() const;
+	uint32_t GetNumBlockVertical() const;
 
 private:
 	MapchipData mapchipData_;

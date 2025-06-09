@@ -22,6 +22,9 @@ std::map<std::string, MapchipType> mapchipTable = {
 };
 }
 
+uint32_t Mapchip::GetNumBlockHorizontal() const { return kNumBlockHorizontal; }
+uint32_t Mapchip::GetNumBlockVertical() const { return kNumBlockVertical; }
+
 void Mapchip::ResetMapchipData() {
 	mapchipData_.data.clear();
 	mapchipData_.data.resize(kNumBlockVertical);
