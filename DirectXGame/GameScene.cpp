@@ -19,6 +19,8 @@ GameScene::~GameScene() {
 	mapchipField_ = nullptr;
 	delete skydome_;
 	skydome_ = nullptr;
+	delete cameraController_;
+	cameraController_ = nullptr;
 
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
@@ -47,7 +49,7 @@ void GameScene::Initialize() {
 	
 	worldTransform_.Initialize();
 	camera_.Initialize();
-	//camera_.farZ = 500;
+	//camera_.farZ = 500;	
 
 	PrimitiveDrawer::GetInstance()->SetCamera(&camera_);
 
@@ -56,16 +58,22 @@ void GameScene::Initialize() {
 	AxisIndicator::GetInstance()->SetVisible(true);
 	AxisIndicator::GetInstance()->SetTargetCamera(&debugCamera_->GetCamera());
 #pragma endregion
-	player_ = new Player();
-	Vector3 playerPosition = mapchipField_->GetMapchipPositionByIndex(1, 9);
-	player_->Initialize(model_, &camera_, playerPosition);
-
-	skydome_ = new Skydome();
-	skydome_->Initialize(&camera_);
 
 	mapchipField_ = new Mapchip;
 	mapchipField_->LoadMapchipCsv("Resources/map/mapchip.csv");
 
+	player_ = new Player();
+	Vector3 playerPosition = mapchipField_->GetMapchipPositionByIndex(1, 9);
+	player_->Initialize(model_, &camera_, playerPosition);
+	player_->SetMapchipField(mapchipField_);
+
+	skydome_ = new Skydome();
+	skydome_->Initialize(&camera_);
+
+	cameraController_ = new CameraController();
+	cameraController_->Initialize(camera_);
+	cameraController_->SetTarget(player_);
+	cameraController_->Reset();
 	GenerateMap();
 }
 
@@ -137,6 +145,8 @@ void GameScene::Update() {
 	player_->Update();
 #pragma endregion Player
 	skydome_->Update();
+
+	cameraController_->Update();
 }
 void GameScene::Draw() {
 
@@ -160,7 +170,7 @@ void GameScene::Draw() {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			if (!worldTransformBlock)
 				continue;
-			blockModel_->Draw(*worldTransformBlock, debugCamera_->GetCamera());
+			blockModel_->Draw(*worldTransformBlock, camera_);
 		}
 	}
 	//

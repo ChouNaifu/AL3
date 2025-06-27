@@ -4,6 +4,7 @@
 #include "Player.h"
 #include "Skydome.h"
 #include "Mapchip.h"
+#include "CameraController.h"
 
 class GameScene {
 public:
@@ -17,6 +18,7 @@ public:
 	Player* player_ = nullptr;
 	Skydome* skydome_ = nullptr;
 	Mapchip* mapchipField_ = nullptr;
+	CameraController* cameraController_ = nullptr;
 
 private:
 	uint32_t textureHandle_ = 0u;

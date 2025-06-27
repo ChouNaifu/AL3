@@ -4,6 +4,7 @@
 #include <numbers>
 #include <iostream>
 #include <algorithm>
+#include "mapchip.h"
 
 using namespace KamataEngine;
 using namespace MathUtility;
@@ -21,6 +22,46 @@ void Player::Initialize(Model* model, Camera* camera, const Vector3& position) {
    assert(camera);
    camera_ = camera;
 }
+
+KamataEngine::Vector3 Player::VertexPosition(const KamataEngine::Vector3& center, Vertex p) {
+	Vector3 offsetTable[kNumVertex] = {
+	    {kWidth / 2.0f, -kHeight / 2.0f, 0.0f }, // RightBottom
+	    {-kWidth / 2.0f, -kHeight / 2.0f, 0.0f }, // LeftBottom
+	    {kWidth / 2.0f, kHeight / 2.0f, 0.0f }, // RightTop
+	    {-kWidth / 2.0f, +kHeight / 2.0f, 0.0f }  // LeftTop
+	};
+	return center + offsetTable[static_cast<uint32_t>(p)];
+}
+
+void Player::CheckTop(CollisionMapInfo& info) {
+	if (info.movement.y <= 0) {
+		return;
+	}
+	std::array<Vector3, kNumVertex> positionsNew;
+	for (uint32_t i = 0; i < positionsNew.size(); ++i) {
+		positionsNew[i] = VertexPosition(worldTransform_.translation_ + info.movement, static_cast<Vertex>(i));
+	}
+	MapchipType mapchipType[2];
+	bool hit = false;
+	Mapchip::IndexSet indexSet[2];
+	indexSet[0] = mapchipField_->GetIndexSetByPosition(positionsNew[kLeftTop]);
+	mapchipType[0] = mapchipField_->GetMapchipTypeByIndex(indexSet[0].xIndex, indexSet[0].yIndex);
+	indexSet[1] = mapchipField_->GetIndexSetByPosition(positionsNew[kRightTop]);
+	mapchipType[1] = mapchipField_->GetMapchipTypeByIndex(indexSet[1].xIndex, indexSet[1].yIndex);
+
+	if (mapchipType[0] == MapchipType::Wall || mapchipType[1] == MapchipType::Wall) {
+		hit = true;
+	}
+
+}
+
+void Player::MapCollisionCheck(CollisionMapInfo& info) {
+	CheckTop(info);
+	//CheckBottom(info);
+	//CheckRight(info);
+	//CheckLeft(info);
+}
+
 
 void Player::Update() {
 	////移動
@@ -60,6 +101,11 @@ void Player::Update() {
 		velocity_ += Vector3{0.0f, -kGravityAcceleration, 0.0f};
 		velocity_.y = std::max(velocity_.y, -kLimitFallSpeed);
 	}
+	// 衝突判定
+	CollisionMapInfo collisionMapInfo;
+	collisionMapInfo.movement = velocity_;
+	MapCollisionCheck(collisionMapInfo);
+
 	bool landing = false;
 	if (velocity_.y < 0.0f) {
 		if (worldTransform_.translation_.y <= 2.0f) {
@@ -96,5 +142,6 @@ void Player::Update() {
 }
 
 void Player::Draw() { 
-	model_->Draw(worldTransform_, *camera_, textureHandle_);
-}
+	model_->Draw(worldTransform_, *camera_, textureHandle_); }
+
+
