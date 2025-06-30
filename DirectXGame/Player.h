@@ -32,6 +32,7 @@ private:
 	static inline const float kJumpAcceleration = 1.5f;
 	static inline const float kWidth = 2.0f;
 	static inline const float kHeight = 2.0f;
+	static inline const float kBlank = 0.1f;
 	float turnInitialRotationY_ = 0.0f;
 	float turnTimer_ = 0.0f;
 	static inline const float kTurnTime = 0.3f;
@@ -68,5 +69,6 @@ public:
 
 	void CheckTop(CollisionMapInfo& info);
 	void MapCollisionCheck(CollisionMapInfo& info);
-
+	void CollisionMove(const CollisionMapInfo& info);
+	void TopCollided(const CollisionMapInfo& info);
 };

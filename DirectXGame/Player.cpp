@@ -41,16 +41,24 @@ void Player::CheckTop(CollisionMapInfo& info) {
 	for (uint32_t i = 0; i < positionsNew.size(); ++i) {
 		positionsNew[i] = VertexPosition(worldTransform_.translation_ + info.movement, static_cast<Vertex>(i));
 	}
-	MapchipType mapchipType[2];
+	MapchipType mapchipType;
 	bool hit = false;
-	Mapchip::IndexSet indexSet[2];
-	indexSet[0] = mapchipField_->GetIndexSetByPosition(positionsNew[kLeftTop]);
-	mapchipType[0] = mapchipField_->GetMapchipTypeByIndex(indexSet[0].xIndex, indexSet[0].yIndex);
-	indexSet[1] = mapchipField_->GetIndexSetByPosition(positionsNew[kRightTop]);
-	mapchipType[1] = mapchipField_->GetMapchipTypeByIndex(indexSet[1].xIndex, indexSet[1].yIndex);
-
-	if (mapchipType[0] == MapchipType::Wall || mapchipType[1] == MapchipType::Wall) {
+	Mapchip::IndexSet indexSet;
+	indexSet = mapchipField_->GetIndexSetByPosition(positionsNew[kLeftTop]);
+	mapchipType = mapchipField_->GetMapchipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
+	if (mapchipType == MapchipType::Wall) {
 		hit = true;
+	}
+	indexSet = mapchipField_->GetIndexSetByPosition(positionsNew[kRightTop]);
+	mapchipType = mapchipField_->GetMapchipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
+	if (mapchipType == MapchipType::Wall) {
+		hit = true;
+	}
+	if (hit) {
+		indexSet = mapchipField_->GetIndexSetByPosition(positionsNew[kLeftTop]);
+		Mapchip::Rect rect = mapchipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
+		info.movement.y = std::max(0.0f, rect.bottom - positionsNew[kLeftTop].y);
+		info.top = true;
 	}
 
 }
@@ -60,6 +68,17 @@ void Player::MapCollisionCheck(CollisionMapInfo& info) {
 	//CheckBottom(info);
 	//CheckRight(info);
 	//CheckLeft(info);
+}
+
+void Player::CollisionMove(const CollisionMapInfo& info) {
+	worldTransform_.translation_ += info.movement; 
+}
+
+void Player::TopCollided(const CollisionMapInfo& info) {
+	if (info.top) {
+		DebugText::GetInstance()->ConsolePrintf("Top Collision\n");
+		velocity_.y = 0.0f;
+	}
 }
 
 
@@ -105,6 +124,8 @@ void Player::Update() {
 	CollisionMapInfo collisionMapInfo;
 	collisionMapInfo.movement = velocity_;
 	MapCollisionCheck(collisionMapInfo);
+	CollisionMove(collisionMapInfo);
+	TopCollided(collisionMapInfo);
 
 	bool landing = false;
 	if (velocity_.y < 0.0f) {
