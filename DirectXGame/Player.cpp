@@ -42,9 +42,77 @@ void Player::CheckTop(CollisionMapInfo& info) {
 		positionsNew[i] = VertexPosition(worldTransform_.translation_ + info.movement, static_cast<Vertex>(i));
 	}
 	MapchipType mapchipType;
+	MapchipType mapchipTypeNext;
 	bool hit = false;
 	Mapchip::IndexSet indexSet;
 	indexSet = mapchipField_->GetIndexSetByPosition(positionsNew[kLeftTop]);
+	mapchipType = mapchipField_->GetMapchipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
+	mapchipTypeNext = mapchipField_->GetMapchipTypeByIndex(indexSet.xIndex, indexSet.yIndex + 1);
+	if (mapchipType == MapchipType::Wall && mapchipTypeNext != MapchipType::Wall) {
+		hit = true;
+	}
+	indexSet = mapchipField_->GetIndexSetByPosition(positionsNew[kRightTop]);
+	mapchipType = mapchipField_->GetMapchipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
+	mapchipTypeNext = mapchipField_->GetMapchipTypeByIndex(indexSet.xIndex, indexSet.yIndex + 1);
+	if (mapchipType == MapchipType::Wall && mapchipTypeNext != MapchipType::Wall) {
+		hit = true;
+	}
+	if (hit) {
+		indexSet = mapchipField_->GetIndexSetByPosition(positionsNew[kLeftTop]);
+		Mapchip::Rect rect = mapchipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
+		info.movement.y = std::max(0.0f, rect.bottom - worldTransform_.translation_.y - 0.8f - 0.2f);
+		info.top = true;
+	}
+}
+
+void Player::CheckGround(CollisionMapInfo& info) {
+	if (info.movement.y >= 0) {
+		return;
+	}
+	std::array<Vector3, kNumVertex> positionsNew;
+	for (uint32_t i = 0; i < positionsNew.size(); ++i) {
+		positionsNew[i] = VertexPosition(worldTransform_.translation_ + info.movement, static_cast<Vertex>(i));
+	}
+	MapchipType mapchipType;
+	MapchipType mapchipTypeNext;
+	bool hit = false;
+	Mapchip::IndexSet indexSet;
+	indexSet = mapchipField_->GetIndexSetByPosition(positionsNew[kLeftBottom]);
+	mapchipType = mapchipField_->GetMapchipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
+	mapchipTypeNext = mapchipField_->GetMapchipTypeByIndex(indexSet.xIndex, indexSet.yIndex - 1);
+	if (mapchipType == MapchipType::Wall && mapchipTypeNext != MapchipType::Wall) {
+		hit = true;
+	}
+	indexSet = mapchipField_->GetIndexSetByPosition(positionsNew[kRightBottom]);
+	mapchipType = mapchipField_->GetMapchipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
+	mapchipTypeNext = mapchipField_->GetMapchipTypeByIndex(indexSet.xIndex, indexSet.yIndex - 1);
+	if (mapchipType == MapchipType::Wall && mapchipTypeNext != MapchipType::Wall) {	
+		hit = true;
+	}
+	if (hit) {
+		indexSet = mapchipField_->GetIndexSetByPosition(positionsNew[kLeftBottom]);
+		Mapchip::IndexSet indexSetNow;
+		indexSetNow = mapchipField_->GetIndexSetByPosition(worldTransform_.translation_);
+		if (indexSetNow.yIndex != indexSet.yIndex) {
+			Mapchip::Rect rect = mapchipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
+			info.movement.y = std::max(0.0f, rect.top - worldTransform_.translation_.y + kBlank);
+			info.ground = true;
+		}	
+	}
+}
+
+void Player::CheckRight(CollisionMapInfo& info) { 
+	if (info.movement.x < 0.0f) {
+		return;
+	}
+	std::array<Vector3, kNumVertex> positionsNew;
+	for (uint32_t i = 0; i < positionsNew.size(); ++i) {
+		positionsNew[i] = VertexPosition(worldTransform_.translation_ + info.movement, static_cast<Vertex>(i));
+	}
+	MapchipType mapchipType;
+	bool hit = false;
+	Mapchip::IndexSet indexSet;
+	indexSet = mapchipField_->GetIndexSetByPosition(positionsNew[kRightBottom]);
 	mapchipType = mapchipField_->GetMapchipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
 	if (mapchipType == MapchipType::Wall) {
 		hit = true;
@@ -55,19 +123,47 @@ void Player::CheckTop(CollisionMapInfo& info) {
 		hit = true;
 	}
 	if (hit) {
-		indexSet = mapchipField_->GetIndexSetByPosition(positionsNew[kLeftTop]);
+		indexSet = mapchipField_->GetIndexSetByPosition(positionsNew[kRightBottom]);
 		Mapchip::Rect rect = mapchipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
-		info.movement.y = std::max(0.0f, rect.bottom - positionsNew[kLeftTop].y);
-		info.top = true;
+		info.movement.x = std::max(0.0f, rect.left - worldTransform_.translation_.x - kBlank - kWidth/2);
+		info.wall = true;
 	}
+}
 
+void Player::CheckLeft(CollisionMapInfo& info) {
+	if (info.movement.x > 0.0f) {
+		return;
+	}
+	std::array<Vector3, kNumVertex> positionsNew;
+	for (uint32_t i = 0; i < positionsNew.size(); ++i) {
+		positionsNew[i] = VertexPosition(worldTransform_.translation_ + info.movement, static_cast<Vertex>(i));
+	}
+	MapchipType mapchipType;
+	bool hit = false;
+	Mapchip::IndexSet indexSet;
+	indexSet = mapchipField_->GetIndexSetByPosition(positionsNew[kLeftBottom]);
+	mapchipType = mapchipField_->GetMapchipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
+	if (mapchipType == MapchipType::Wall) {
+		hit = true;
+	}
+	indexSet = mapchipField_->GetIndexSetByPosition(positionsNew[kLeftTop]);
+	mapchipType = mapchipField_->GetMapchipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
+	if (mapchipType == MapchipType::Wall) {
+		hit = true;
+	}
+	if (hit) {
+		indexSet = mapchipField_->GetIndexSetByPosition(positionsNew[kLeftBottom]);
+		Mapchip::Rect rect = mapchipField_->GetRectByIndex(indexSet.xIndex, indexSet.yIndex);
+		info.movement.x = std::max(0.0f, rect.right - worldTransform_.translation_.x - kBlank);
+		info.wall = true;
+	}
 }
 
 void Player::MapCollisionCheck(CollisionMapInfo& info) {
 	CheckTop(info);
-	//CheckBottom(info);
-	//CheckRight(info);
-	//CheckLeft(info);
+	CheckGround(info);
+	CheckRight(info);
+	CheckLeft(info);
 }
 
 void Player::CollisionMove(const CollisionMapInfo& info) {
@@ -78,6 +174,47 @@ void Player::TopCollided(const CollisionMapInfo& info) {
 	if (info.top) {
 		DebugText::GetInstance()->ConsolePrintf("Top Collision\n");
 		velocity_.y = 0.0f;
+	}
+}
+
+void Player::GroundCollided(const CollisionMapInfo& info) {
+	if (onGround_) {
+		if (velocity_.y > 0.0f) {
+			onGround_ = false;
+		} else {
+			std::array<Vector3, kNumVertex> positionsNew;
+			for (uint32_t i = 0; i < positionsNew.size(); ++i) {
+				positionsNew[i] = VertexPosition(worldTransform_.translation_ + info.movement, static_cast<Vertex>(i));
+			}
+			MapchipType mapchipType;
+			bool hit = false;
+			Mapchip::IndexSet indexSet;
+			indexSet = mapchipField_->GetIndexSetByPosition(positionsNew[kLeftBottom] + Vector3(0, -0.3f, 0));
+			mapchipType = mapchipField_->GetMapchipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
+			if (mapchipType == MapchipType::Wall) {
+				hit = true;
+			}
+			indexSet = mapchipField_->GetIndexSetByPosition(positionsNew[kRightBottom] + Vector3(0, -0.3f, 0));
+			mapchipType = mapchipField_->GetMapchipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
+			if (mapchipType == MapchipType::Wall) {	
+				hit = true;
+			}
+			if (!hit) {
+				onGround_ = false;
+			}
+		}
+	} else {
+		if (info.ground) {
+			onGround_ = true;
+			velocity_.x *= (1.0f - kAttenuationLanding);
+			velocity_.y = 0.0f;
+		}
+	}
+}
+
+void Player::WallCollided(const CollisionMapInfo& info) {
+	if (info.wall) {
+		velocity_.x *= (1.0f - kAttenuationWall);
 	}
 }
 
@@ -124,8 +261,10 @@ void Player::Update() {
 	CollisionMapInfo collisionMapInfo;
 	collisionMapInfo.movement = velocity_;
 	MapCollisionCheck(collisionMapInfo);
-	//CollisionMove(collisionMapInfo);
+	CollisionMove(collisionMapInfo);
 	TopCollided(collisionMapInfo);
+	GroundCollided(collisionMapInfo);
+	WallCollided(collisionMapInfo);
 
 	bool landing = false;
 	if (velocity_.y < 0.0f) {
@@ -158,7 +297,7 @@ void Player::Update() {
 		worldTransform_.rotation_.y = Lerp(turnInitialRotationY_, destinationRotationY, easeT);
 	}
 
-	worldTransform_.translation_ += velocity_;
+	//worldTransform_.translation_ += velocity_;
 	worldTransform_.UpdateMatrix();	
 }
 

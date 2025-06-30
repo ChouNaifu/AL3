@@ -24,15 +24,17 @@ private:
 	uint32_t soundDataHandle_ = 0;
 	uint32_t voiceHandle_ = 0;
 	KamataEngine::Vector3 velocity_ = {};
-	static inline const float kAcceleration = 0.1f;
-	static inline const float kAttenuation = 0.1f;
+	static inline const float kAcceleration = 0.05f;
+	static inline const float kAttenuation = 0.2f;
 	static inline const float kLimitRunSpeed = 1.0f;
 	static inline const float kGravityAcceleration = 0.1f;
 	static inline const float kLimitFallSpeed = 3.0f;
 	static inline const float kJumpAcceleration = 1.5f;
-	static inline const float kWidth = 2.0f;
-	static inline const float kHeight = 2.0f;
-	static inline const float kBlank = 0.1f;
+	static inline const float kWidth = 1.6f;
+	static inline const float kHeight = 1.6f;
+	static inline const float kBlank = 0.5f;
+	static inline const float kAttenuationLanding = 0.1f;
+	static inline const float kAttenuationWall = 0.5f;
 	float turnInitialRotationY_ = 0.0f;
 	float turnTimer_ = 0.0f;
 	static inline const float kTurnTime = 0.3f;
@@ -68,7 +70,12 @@ public:
 	KamataEngine::Vector3 VertexPosition(const KamataEngine::Vector3& center, Vertex p);
 
 	void CheckTop(CollisionMapInfo& info);
+	void CheckGround(CollisionMapInfo& info);
+	void CheckRight(CollisionMapInfo& info);
+	void CheckLeft(CollisionMapInfo& info);
 	void MapCollisionCheck(CollisionMapInfo& info);
 	void CollisionMove(const CollisionMapInfo& info);
 	void TopCollided(const CollisionMapInfo& info);
+	void GroundCollided(const CollisionMapInfo& info);
+	void WallCollided(const CollisionMapInfo& info);
 };
