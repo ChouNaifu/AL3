@@ -124,7 +124,7 @@ void Player::Update() {
 	CollisionMapInfo collisionMapInfo;
 	collisionMapInfo.movement = velocity_;
 	MapCollisionCheck(collisionMapInfo);
-	CollisionMove(collisionMapInfo);
+	//CollisionMove(collisionMapInfo);
 	TopCollided(collisionMapInfo);
 
 	bool landing = false;

@@ -27,15 +27,9 @@ uint32_t Mapchip::GetNumBlockVertical() const { return kNumBlockVertical; }
 
 Mapchip::IndexSet Mapchip::GetIndexSetByPosition(const KamataEngine::Vector3& position) { 
 	IndexSet indexSet;
-	indexSet.xIndex = static_cast<uint32_t>(position.x / kBlockWidth);
-	indexSet.yIndex = static_cast<uint32_t>(position.y / kBlockHeight);
-
-	if (indexSet.xIndex >= kNumBlockHorizontal) {
-		indexSet.xIndex = kNumBlockHorizontal - 1;
-	}
-	if (indexSet.yIndex >= kNumBlockVertical) {
-		indexSet.yIndex = kNumBlockVertical - 1;
-	}
+	indexSet.xIndex = static_cast<uint32_t>((position.x + kBlockWidth/2) / kBlockWidth);
+	indexSet.yIndex = static_cast<uint32_t>((position.y + kBlockHeight/2) / kBlockHeight);
+	indexSet.yIndex = kNumBlockVertical - 1 - indexSet.yIndex;
 	return indexSet;
 }
 

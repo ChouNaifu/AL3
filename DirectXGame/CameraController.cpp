@@ -20,11 +20,11 @@ void CameraController::Initialize(Camera& camera) {
 
 void CameraController::Update() {
 	const WorldTransform& targetWorldTransform = target_->GetWorldTransform();
-	//pussy(加藤剛志より)
+
 	cameraTarget_ = targetWorldTransform.translation_ + targetOffset_ + target_->GetVelocity() * kVelocityBias;
 	camera_->translation_.x = Lerp(camera_->translation_.x, cameraTarget_.x, kInterpolationRate);
-	camera_->translation_.y = Lerp(camera_->translation_.y, cameraTarget_.y, kInterpolationRate);
-	//breast(加藤剛志より)
+	camera_->translation_.y = Lerp(camera_->translation_.y, cameraTarget_.y, 0.01f);
+
 	camera_->translation_.x = std::clamp(camera_->translation_.x, 
 		targetWorldTransform.translation_.x + margin.left, 
 		targetWorldTransform.translation_.x + margin.right);
