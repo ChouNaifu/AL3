@@ -5,6 +5,7 @@
 #include "Skydome.h"
 #include "Mapchip.h"
 #include "CameraController.h"
+#include "Enemy.h"
 
 class GameScene {
 public:
@@ -19,6 +20,7 @@ public:
 	Skydome* skydome_ = nullptr;
 	Mapchip* mapchipField_ = nullptr;
 	CameraController* cameraController_ = nullptr;
+	Enemy* enemy_ = nullptr;
 
 private:
 	uint32_t textureHandle_ = 0u;

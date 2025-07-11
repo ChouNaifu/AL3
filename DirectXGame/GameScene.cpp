@@ -21,6 +21,8 @@ GameScene::~GameScene() {
 	skydome_ = nullptr;
 	delete cameraController_;
 	cameraController_ = nullptr;
+	delete enemy_;
+	enemy_ = nullptr;
 
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
@@ -66,6 +68,11 @@ void GameScene::Initialize() {
 	Vector3 playerPosition = mapchipField_->GetMapchipPositionByIndex(1, 9);
 	player_->Initialize(model_, &camera_, playerPosition);
 	player_->SetMapchipField(mapchipField_);
+
+	enemy_ = new Enemy();
+	Vector3 enemyPosition = mapchipField_->GetMapchipPositionByIndex(10, 9);
+	enemy_->Initialize(&camera_, enemyPosition);
+	enemy_->SetMapchipField(mapchipField_);
 
 	skydome_ = new Skydome();
 	skydome_->Initialize(&camera_);
@@ -147,6 +154,8 @@ void GameScene::Update() {
 	skydome_->Update();
 
 	cameraController_->Update();
+
+	enemy_->Update();
 }
 void GameScene::Draw() {
 
@@ -165,6 +174,7 @@ void GameScene::Draw() {
 	//model_->Draw(worldTransform_, debugCamera_->GetCamera(), textureHandle_);
 	player_->Draw();
 	skydome_->Draw();
+	enemy_->Draw();
 
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {

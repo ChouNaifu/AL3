@@ -1,0 +1,37 @@
+#pragma once
+#include "KamataEngine.h"
+
+class Mapchip;
+
+class Enemy {
+private:
+
+	KamataEngine::Model* model_ = nullptr;
+	KamataEngine::WorldTransform worldTransform_;
+	KamataEngine::Camera* camera_ = nullptr;
+	KamataEngine::Vector3 velocity_ = {};
+	Mapchip* mapchipField_ = nullptr;
+
+	static inline const float kSpeed = 0.05f;
+	static inline const float kWidth = 2.0f;
+	static inline const float kHeight = 2.0f;
+	static inline const float kWalkMotionAngleStart = 0.5f;
+	static inline const float kWalkMotionAngleEnd = 0.5f;
+	static inline const float kWalkMotionTime = 3.0f;
+	static inline const float amplitude = 0.05f;
+
+	float walkTimer_ = 0.0f;
+
+
+public:
+
+	Enemy();
+	~Enemy();
+
+	void Initialize(KamataEngine::Camera* camera, const KamataEngine::Vector3& position);
+	void Update();
+	void Draw();
+	KamataEngine::WorldTransform& GetWorldTransform() { return worldTransform_; }
+	const KamataEngine::Vector3& GetVelocity() const { return velocity_; }
+	void SetMapchipField(Mapchip* mapchipField) { mapchipField_ = mapchipField; }
+};
