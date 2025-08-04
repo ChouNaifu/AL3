@@ -21,8 +21,11 @@ GameScene::~GameScene() {
 	skydome_ = nullptr;
 	delete cameraController_;
 	cameraController_ = nullptr;
-	delete enemy_;
-	enemy_ = nullptr;
+
+	for (Enemy* enemy : enemies_) {
+		delete enemy;
+	}
+	enemies_.clear();
 
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
@@ -69,10 +72,20 @@ void GameScene::Initialize() {
 	player_->Initialize(model_, &camera_, playerPosition);
 	player_->SetMapchipField(mapchipField_);
 
-	enemy_ = new Enemy();
-	Vector3 enemyPosition = mapchipField_->GetMapchipPositionByIndex(10, 9);
-	enemy_->Initialize(&camera_, enemyPosition);
-	enemy_->SetMapchipField(mapchipField_);
+	for (int32_t i = 0; i < enemiesCount; ++i) {
+		Enemy* newEnemy = new Enemy();
+		Vector3 enemyPosition = mapchipField_->GetMapchipPositionByIndex(10 + i, 9);
+		newEnemy->Initialize(&camera_, enemyPosition);
+		enemies_.push_back(newEnemy);
+		newEnemy->SetMapchipField(mapchipField_);
+		if (i % 3 == 0) {
+			newEnemy->movePattern_ = Enemy::MovePattern::CosWave;
+		} else if (i % 3 == 1) {
+			newEnemy->movePattern_ = Enemy::MovePattern::Zigzag;
+		} else if (i % 3 == 2) {
+			newEnemy->movePattern_ = Enemy::MovePattern::SinWave;
+		}
+	}
 
 	skydome_ = new Skydome();
 	skydome_->Initialize(&camera_);
@@ -82,6 +95,10 @@ void GameScene::Initialize() {
 	cameraController_->SetTarget(player_);
 	cameraController_->Reset();
 	GenerateMap();
+
+	collision_.SetPlayer(player_);
+	collision_.SetEnemies(&enemies_);
+	
 }
 
 void GameScene::GenerateMap() {
@@ -104,6 +121,8 @@ void GameScene::GenerateMap() {
 		}
 	}
 }
+
+
 
 void GameScene::Update() {
 #pragma region Update
@@ -129,7 +148,7 @@ void GameScene::Update() {
 
 #ifdef _DEBUG
 	//ImGui::Begin("Debug1");
-	//ImGui::Text("Chou nobu %d %d %d", 2050, 12, 32);
+	//ImGui::Text("Chou nobu %f", player_->GetAABB().max.x);
 	//ImGui::InputFloat3("InputFloat3", inputFloat3);
 	//ImGui::SliderFloat3("SliderFloat %f %f", &(position.x), 0, 1000);
 	//ImGui::ShowDemoWindow();
@@ -155,7 +174,11 @@ void GameScene::Update() {
 
 	cameraController_->Update();
 
-	enemy_->Update();
+	for (Enemy* enemy : enemies_) {
+		enemy->Update();
+	}
+
+	collision_.CheckAllCollision();
 }
 void GameScene::Draw() {
 
@@ -174,7 +197,9 @@ void GameScene::Draw() {
 	//model_->Draw(worldTransform_, debugCamera_->GetCamera(), textureHandle_);
 	player_->Draw();
 	skydome_->Draw();
-	enemy_->Draw();
+	for (Enemy* enemy : enemies_) {
+		enemy->Draw();
+	}
 
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {

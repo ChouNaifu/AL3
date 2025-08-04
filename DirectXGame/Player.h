@@ -1,7 +1,10 @@
 #pragma once
 #include "KamataEngine.h"
+#include "AABB.h"
 
 class Mapchip;
+class Enemy;
+class AABBUtil;
 
 class Player {
 
@@ -18,6 +21,7 @@ private:
 		kRight,
 		kLeft,
 	};
+
 	LRDirection lrdirection_ = LRDirection::kRight;
 
 	uint32_t textureHandle_ = 0;
@@ -66,7 +70,7 @@ public:
 		bool wall = false;
 		KamataEngine::Vector3 movement;
 	};
-
+	
 	KamataEngine::Vector3 VertexPosition(const KamataEngine::Vector3& center, Vertex p);
 
 	void CheckTop(CollisionMapInfo& info);
@@ -78,4 +82,10 @@ public:
 	void TopCollided(const CollisionMapInfo& info);
 	void GroundCollided(const CollisionMapInfo& info);
 	void WallCollided(const CollisionMapInfo& info);
+
+	KamataEngine::Vector3 GetWorldPosition();
+	float GetPlayerHeight() const { return kHeight; }
+	float GetPlayerWidth() const { return kWidth; }
+	AABB GetAABB() const;
+	void OnCollision(const Enemy* enemy);
 };

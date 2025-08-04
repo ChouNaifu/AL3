@@ -218,7 +218,23 @@ void Player::WallCollided(const CollisionMapInfo& info) {
 	}
 }
 
+KamataEngine::Vector3 Player::GetWorldPosition() { 
+	Vector3 worldPos;
+	worldPos.x = worldTransform_.translation_.x;
+	worldPos.y = worldTransform_.translation_.y;
+	worldPos.z = worldTransform_.translation_.z;
+	return worldPos;
+}
 
+AABB Player::GetAABB() const { 
+	return AABBUtil::GetAABB(worldTransform_, GetPlayerWidth(), GetPlayerHeight());
+}
+
+void Player::OnCollision(const Enemy* enemy) {
+	(void)enemy;
+	velocity_ = Vector3{0.0f, kJumpAcceleration, 0.0f};
+}
+	
 void Player::Update() {
 	////移動
 	if (onGround_) {

@@ -6,6 +6,7 @@
 #include "Mapchip.h"
 #include "CameraController.h"
 #include "Enemy.h"
+#include "Collision.h"
 
 class GameScene {
 public:
@@ -20,7 +21,9 @@ public:
 	Skydome* skydome_ = nullptr;
 	Mapchip* mapchipField_ = nullptr;
 	CameraController* cameraController_ = nullptr;
-	Enemy* enemy_ = nullptr;
+	std::list<Enemy*> enemies_;
+	static inline const int enemiesCount = 10;
+	Collision collision_;
 
 private:
 	uint32_t textureHandle_ = 0u;
@@ -36,4 +39,6 @@ private:
 	KamataEngine::WorldTransform worldTransform_;
 	KamataEngine::Camera camera_;
 	KamataEngine::DebugCamera* debugCamera_ = nullptr;
+
+
 };
