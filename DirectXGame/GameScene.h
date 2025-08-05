@@ -6,6 +6,7 @@
 #include "Mapchip.h"
 #include "CameraController.h"
 #include "Enemy.h"
+#include "DeathParticles.h"
 #include "Collision.h"
 
 class GameScene {
@@ -23,6 +24,7 @@ public:
 	CameraController* cameraController_ = nullptr;
 	std::list<Enemy*> enemies_;
 	static inline const int enemiesCount = 10;
+	DeathParticles* deathParticles_ = nullptr;
 	Collision collision_;
 
 private:
@@ -31,11 +33,13 @@ private:
 	uint32_t voiceHandle_ = 0;
 	float inputFloat3[3] = {0.0f, 0.0f, 0.0f};
 	bool isDebugCameraActive_ = false;
+	bool isDeathParticlesActive_ = true;
 	std::vector < std::vector < KamataEngine::WorldTransform* >> worldTransformBlocks_;
 
 	KamataEngine::Sprite* sprite_ = nullptr;
 	KamataEngine::Model* model_ = nullptr;
 	KamataEngine::Model* blockModel_ = nullptr;
+	KamataEngine::Model* deathParticlesModel_ = nullptr;
 	KamataEngine::WorldTransform worldTransform_;
 	KamataEngine::Camera camera_;
 	KamataEngine::DebugCamera* debugCamera_ = nullptr;

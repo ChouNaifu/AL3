@@ -15,6 +15,8 @@ GameScene::~GameScene() {
 	player_ = nullptr;
 	delete blockModel_;
 	blockModel_ = nullptr;
+	delete deathParticles_;
+	deathParticles_ = nullptr;
 	delete mapchipField_;
 	mapchipField_ = nullptr;
 	delete skydome_;
@@ -51,6 +53,7 @@ void GameScene::Initialize() {
 	sprite_ = Sprite::Create(textureHandle_, {100, 50});
 	model_ = Model::CreateFromOBJ("robot", true);
 	blockModel_ = Model::CreateFromOBJ("cube", true);
+	deathParticlesModel_ = Model::CreateFromOBJ("particle", true);
 	
 	worldTransform_.Initialize();
 	camera_.Initialize();
@@ -89,6 +92,9 @@ void GameScene::Initialize() {
 
 	skydome_ = new Skydome();
 	skydome_->Initialize(&camera_);
+
+	deathParticles_ = new DeathParticles;
+	deathParticles_->Initialize(deathParticlesModel_, &camera_, player_);
 
 	cameraController_ = new CameraController();
 	cameraController_->Initialize(camera_);
@@ -178,6 +184,10 @@ void GameScene::Update() {
 		enemy->Update();
 	}
 
+	if (isDeathParticlesActive_) {
+		deathParticles_->Update();
+	}
+
 	collision_.CheckAllCollision();
 }
 void GameScene::Draw() {
@@ -200,7 +210,9 @@ void GameScene::Draw() {
 	for (Enemy* enemy : enemies_) {
 		enemy->Draw();
 	}
-
+	if (isDeathParticlesActive_) {
+		deathParticles_->Draw();
+	}
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			if (!worldTransformBlock)

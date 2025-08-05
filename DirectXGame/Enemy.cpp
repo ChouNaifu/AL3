@@ -26,14 +26,6 @@ void Enemy::OnCollision(const Player* player) {
 	(void)player; 
 }
 
-//Enemy::AABB Enemy::GetAABB() {
-//	Vector3 worldPos = GetWorldPosition();
-//	AABB aabb;
-//	aabb.min = worldPos + Vector3{-kWidth / 2.0f, -kHeight / 2.0f, -kWidth / 2.0f};
-//	aabb.max = worldPos + Vector3{kWidth / 2.0f, kHeight / 2.0f, kWidth / 2.0f};
-//	return aabb;
-//}
-
 void Enemy::Initialize(KamataEngine::Camera* camera, const KamataEngine::Vector3& position) {
 	model_ = Model::CreateFromOBJ("skeleton", true);
 	worldTransform_.Initialize();
