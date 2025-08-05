@@ -44,6 +44,7 @@ private:
 	static inline const float kTurnTime = 0.3f;
 
 	bool onGround_ = true;
+	bool isDead_ = false;
 
 	float inputFloat3[3] = {0.0f, 0.0f, 0.0f};
 	KamataEngine::Sprite* sprite_ = nullptr;
@@ -88,4 +89,6 @@ public:
 	float GetPlayerWidth() const { return kWidth; }
 	AABB GetAABB() const;
 	void OnCollision(const Enemy* enemy);
+
+	bool IsDead() const { return isDead_; }
 };

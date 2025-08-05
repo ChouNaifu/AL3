@@ -75,6 +75,8 @@ void GameScene::Initialize() {
 	player_->Initialize(model_, &camera_, playerPosition);
 	player_->SetMapchipField(mapchipField_);
 
+	phase_ = Phase::kPlay;
+
 	for (int32_t i = 0; i < enemiesCount; ++i) {
 		Enemy* newEnemy = new Enemy();
 		Vector3 enemyPosition = mapchipField_->GetMapchipPositionByIndex(10 + i, 9);
@@ -92,9 +94,6 @@ void GameScene::Initialize() {
 
 	skydome_ = new Skydome();
 	skydome_->Initialize(&camera_);
-
-	deathParticles_ = new DeathParticles;
-	deathParticles_->Initialize(deathParticlesModel_, &camera_, player_);
 
 	cameraController_ = new CameraController();
 	cameraController_->Initialize(camera_);
@@ -128,9 +127,42 @@ void GameScene::GenerateMap() {
 	}
 }
 
+void GameScene::ChangePhase() {
+	switch (phase_) {
+	case GameScene::Phase::kPlay:
+		if (player_->IsDead()) {
+			phase_ = Phase::kDeath;
+			const Vector3& deathParticlePosition = player_->GetWorldPosition();
+			deathParticles_ = new DeathParticles;
+			deathParticles_->Initialize(deathParticlesModel_, &camera_, deathParticlePosition);
+		}
+		break;
+	case GameScene::Phase::kDeath:
+		if (deathParticles_ && deathParticles_->IsFinished()) {
+			finished_ = true;
+		}
+		break;
+	}
+}
+
 
 
 void GameScene::Update() {
+
+	switch (phase_) {
+	case Phase::kPlay:
+
+		player_->Update();
+		cameraController_->Update();
+		collision_.CheckAllCollision();
+		break;
+	case Phase::kDeath:
+
+		if (deathParticles_) {
+			deathParticles_->Update();
+		}
+		break;
+	}
 #pragma region Update
 	Vector2 position = sprite_->GetPosition();
 	//position.x += 2.0f;
@@ -173,22 +205,12 @@ void GameScene::Update() {
 
 #endif // DEBUG
 #pragma endregion Update
-#pragma region Player
-	player_->Update();
-#pragma endregion Player
-	skydome_->Update();
 
-	cameraController_->Update();
+	skydome_->Update();
 
 	for (Enemy* enemy : enemies_) {
 		enemy->Update();
 	}
-
-	if (isDeathParticlesActive_) {
-		deathParticles_->Update();
-	}
-
-	collision_.CheckAllCollision();
 }
 void GameScene::Draw() {
 
@@ -210,7 +232,7 @@ void GameScene::Draw() {
 	for (Enemy* enemy : enemies_) {
 		enemy->Draw();
 	}
-	if (isDeathParticlesActive_) {
+	if (deathParticles_) {
 		deathParticles_->Draw();
 	}
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {

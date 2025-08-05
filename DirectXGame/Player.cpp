@@ -232,7 +232,7 @@ AABB Player::GetAABB() const {
 
 void Player::OnCollision(const Enemy* enemy) {
 	(void)enemy;
-	velocity_ = Vector3{0.0f, kJumpAcceleration, 0.0f};
+	isDead_ = true;
 }
 	
 void Player::Update() {

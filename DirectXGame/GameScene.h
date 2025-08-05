@@ -26,6 +26,12 @@ public:
 	static inline const int enemiesCount = 10;
 	DeathParticles* deathParticles_ = nullptr;
 	Collision collision_;
+	enum class Phase {
+		kPlay,
+		kDeath,
+	};
+	Phase phase_;
+	bool IsFinished() const { return finished_; }
 
 private:
 	uint32_t textureHandle_ = 0u;
@@ -33,7 +39,6 @@ private:
 	uint32_t voiceHandle_ = 0;
 	float inputFloat3[3] = {0.0f, 0.0f, 0.0f};
 	bool isDebugCameraActive_ = false;
-	bool isDeathParticlesActive_ = true;
 	std::vector < std::vector < KamataEngine::WorldTransform* >> worldTransformBlocks_;
 
 	KamataEngine::Sprite* sprite_ = nullptr;
@@ -43,6 +48,7 @@ private:
 	KamataEngine::WorldTransform worldTransform_;
 	KamataEngine::Camera camera_;
 	KamataEngine::DebugCamera* debugCamera_ = nullptr;
-
+	void ChangePhase();
+	bool finished_ = false;
 
 };

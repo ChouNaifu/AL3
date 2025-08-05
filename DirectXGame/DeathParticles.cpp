@@ -4,16 +4,18 @@
 using namespace KamataEngine;
 using namespace MathUtility;
 
-void DeathParticles::Initialize(Model* model, Camera* camera, Player* player) { 
+void DeathParticles::Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera, const KamataEngine::Vector3& position) { 
+	
+	model_ = model;
+	assert(camera);
+	camera_ = camera;
+	objectColor_.Initialize();
+	color_ = {1.0f, 1.0f, 1.0f, 1.0f};
 	for (WorldTransform& worldTransform : worldTransforms_) {
 		worldTransform.Initialize();
-		model_ = model;
-		assert(camera);
-		camera_ = camera;
-		objectColor_.Initialize();
-		color_ = {1.0f, 1.0f, 1.0f, 1.0f};
-		worldTransform.translation_ = player->GetWorldPosition();
+		worldTransform.translation_ = position;
 	}
+
 }
 
 void DeathParticles::Update() { 

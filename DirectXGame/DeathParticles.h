@@ -6,9 +6,10 @@
 
 class DeathParticles {
 public:
-	void Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera, Player* player);
+	void Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera, const KamataEngine::Vector3& position);
 	void Update();
 	void Draw();
+	bool IsFinished() const { return isFinished_; }
 
 private:
 	KamataEngine::Model* model_ = nullptr;
