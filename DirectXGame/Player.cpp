@@ -318,6 +318,9 @@ void Player::Update() {
 }
 
 void Player::Draw() { 
+	if (isDead_) {
+		return;
+	}
 	model_->Draw(worldTransform_, *camera_, textureHandle_);
 }
 

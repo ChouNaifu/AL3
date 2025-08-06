@@ -148,7 +148,7 @@ void GameScene::ChangePhase() {
 
 
 void GameScene::Update() {
-
+	ChangePhase();
 	switch (phase_) {
 	case Phase::kPlay:
 
