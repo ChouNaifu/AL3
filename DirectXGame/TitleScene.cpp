@@ -9,13 +9,37 @@ void TitleScene::Initialize() {
 
 	modelTitle_ = Model::CreateFromOBJ("robot");
 	worldTransform_.Initialize();
+
+	fade_ = new Fade();
+	fade_->Initialize();
+	fade_->Start(Fade::Status::FadeIn, 1.0f);
 }
 
 void TitleScene::Update() {
-	camera_->UpdateMatrix();
+	switch (phase_) {
+	case TitleScene::Phase::kFadeIn:
+		camera_->UpdateMatrix();
+		fade_->Update();
+		if (fade_->IsFinished()) {
+			phase_ = TitleScene::Phase::kMain;
+		}
+		break;
+	case TitleScene::Phase::kMain:
+		camera_->UpdateMatrix();
 
-	if (Input::GetInstance()->PushKey(DIK_SPACE)) {
-		finished_ = true;
+		if (Input::GetInstance()->PushKey(DIK_SPACE)) {
+			fade_->Start(Fade::Status::FadeOut, 1.0f);
+			phase_ = TitleScene::Phase::kFadeOut;
+		}
+		break;
+	case TitleScene::Phase::kFadeOut:
+		camera_->UpdateMatrix();
+		fade_->Update();
+
+		if (fade_->IsFinished()) {
+			finished_ = true;
+		}   
+		break;
 	}
 }
 
@@ -29,9 +53,15 @@ void TitleScene::Draw() {
 
 	// 3Dモデルの描画後処理
 	Model::PostDraw();
+
+	fade_->Draw();
 }
 
 TitleScene::~TitleScene() {
 	delete modelTitle_;
+	modelTitle_ = nullptr;
 	delete camera_;
+	camera_ = nullptr;
+	delete fade_;
+	fade_ = nullptr;
 }

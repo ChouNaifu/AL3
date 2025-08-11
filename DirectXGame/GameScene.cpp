@@ -23,6 +23,8 @@ GameScene::~GameScene() {
 	skydome_ = nullptr;
 	delete cameraController_;
 	cameraController_ = nullptr;
+	delete fade_;
+	fade_ = nullptr;
 
 	for (Enemy* enemy : enemies_) {
 		delete enemy;
@@ -75,7 +77,10 @@ void GameScene::Initialize() {
 	player_->Initialize(model_, &camera_, playerPosition);
 	player_->SetMapchipField(mapchipField_);
 
-	phase_ = Phase::kPlay;
+	phase_ = Phase::kFadeIn;
+	fade_ = new Fade();
+	fade_->Initialize();
+	fade_->Start(Fade::Status::FadeIn, 1.0f);
 
 	for (int32_t i = 0; i < enemiesCount; ++i) {
 		Enemy* newEnemy = new Enemy();
@@ -129,6 +134,9 @@ void GameScene::GenerateMap() {
 
 void GameScene::ChangePhase() {
 	switch (phase_) {
+	case GameScene::Phase::kFadeIn:
+		//
+		break;
 	case GameScene::Phase::kPlay:
 		if (player_->IsDead()) {
 			phase_ = Phase::kDeath;
@@ -142,6 +150,9 @@ void GameScene::ChangePhase() {
 			finished_ = true;
 		}
 		break;
+	case GameScene::Phase::kFadeOut:
+		//
+		break;
 	}
 }
 
@@ -150,9 +161,18 @@ void GameScene::ChangePhase() {
 void GameScene::Update() {
 	ChangePhase();
 	switch (phase_) {
+	case Phase::kFadeIn:
+	
+		cameraController_->Update();
+		fade_->Update();
+		if (fade_->IsFinished()) {
+			phase_ = Phase::kPlay;
+		}
+		break;
 	case Phase::kPlay:
 
 		player_->Update();
+
 		cameraController_->Update();
 		collision_.CheckAllCollision();
 		break;
@@ -160,6 +180,22 @@ void GameScene::Update() {
 
 		if (deathParticles_) {
 			deathParticles_->Update();
+		}
+		if (deathParticles_ && deathParticles_->IsFinished()) {
+			phase_ = Phase::kFadeOut;
+			fade_->Start(Fade::Status::FadeOut, 1.0f);
+		}
+		break;
+	case Phase::kFadeOut:
+
+
+		if (deathParticles_) {
+			deathParticles_->Update();
+		}
+		cameraController_->Update();
+		fade_->Update();
+		if (fade_->IsFinished()) {
+			finished_ = true;
 		}
 		break;
 	}
@@ -206,11 +242,11 @@ void GameScene::Update() {
 #endif // DEBUG
 #pragma endregion Update
 
-	skydome_->Update();
-
 	for (Enemy* enemy : enemies_) {
 		enemy->Update();
 	}
+	skydome_->Update();
+
 }
 void GameScene::Draw() {
 
@@ -244,6 +280,11 @@ void GameScene::Draw() {
 	}
 	//
 	Model::PostDraw();
+	if (phase_ == Phase::kFadeIn || phase_ == Phase::kFadeOut) {
+		if (fade_) {
+			fade_->Draw();
+		}
+	}
 	PrimitiveDrawer::GetInstance()->DrawLine3d({0, 0, 0}, {0, 10, 0}, {1, 0, 0, 1});
 
 	

@@ -8,6 +8,7 @@
 #include "Enemy.h"
 #include "DeathParticles.h"
 #include "Collision.h"
+#include "Fade.h"
 
 class GameScene {
 public:
@@ -27,11 +28,14 @@ public:
 	DeathParticles* deathParticles_ = nullptr;
 	Collision collision_;
 	enum class Phase {
+		kFadeIn,
 		kPlay,
 		kDeath,
+		kFadeOut,
 	};
 	Phase phase_;
 	bool IsFinished() const { return finished_; }
+	Fade* fade_ = nullptr;
 
 private:
 	uint32_t textureHandle_ = 0u;
