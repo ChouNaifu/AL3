@@ -172,7 +172,6 @@ void Player::CollisionMove(const CollisionMapInfo& info) {
 
 void Player::TopCollided(const CollisionMapInfo& info) {
 	if (info.top) {
-		DebugText::GetInstance()->ConsolePrintf("Top Collision\n");
 		velocity_.y = 0.0f;
 	}
 }
@@ -238,40 +237,40 @@ void Player::OnCollision(const Enemy* enemy) {
 void Player::Update() {
 	////移動
 	if (onGround_) {
-		if (Input::GetInstance()->PushKey(DIK_RIGHT) || Input::GetInstance()->PushKey(DIK_LEFT)) {
-			Vector3 acceleration = {};
-			if (Input::GetInstance()->PushKey(DIK_RIGHT)) {
-				if (velocity_.x < 0.0f) {
-					velocity_.x *= (1.0f - kAttenuation);
-				}
-				acceleration.x = kAcceleration;
-				if (lrdirection_ != LRDirection::kRight) {
-					lrdirection_ = LRDirection::kRight;
-					turnInitialRotationY_ = worldTransform_.rotation_.y;
-					turnTimer_ = kTurnTime;
-				}
-			} else if (Input::GetInstance()->PushKey(DIK_LEFT)) {
-				if (velocity_.x > 0.0f) {
-					velocity_.x *= (1.0f - kAttenuation);
-				}
-				if (lrdirection_ != LRDirection::kLeft) {
-					lrdirection_ = LRDirection::kLeft;
-					turnInitialRotationY_ = worldTransform_.rotation_.y;
-					turnTimer_ = kTurnTime;
-				}
-				acceleration.x = -kAcceleration;
-			}
-			velocity_ += acceleration;
-			velocity_.x = std::clamp(velocity_.x, -kLimitRunSpeed, kLimitRunSpeed);
-		} else {
-			velocity_.x *= (1.0f - kAttenuation);
-		}
 		if (Input::GetInstance()->PushKey(DIK_SPACE) || Input::GetInstance()->PushKey(DIK_UP)) {
 			velocity_ += Vector3{0.0f, kJumpAcceleration, 0.0f};
 		}
 	} else {
 		velocity_ += Vector3{0.0f, -kGravityAcceleration, 0.0f};
 		velocity_.y = std::max(velocity_.y, -kLimitFallSpeed);
+	}
+	if (Input::GetInstance()->PushKey(DIK_RIGHT) || Input::GetInstance()->PushKey(DIK_LEFT)) {
+		Vector3 acceleration = {};
+		if (Input::GetInstance()->PushKey(DIK_RIGHT)) {
+			if (velocity_.x < 0.0f) {
+				velocity_.x *= (1.0f - kAttenuation);
+			}
+			acceleration.x = kAcceleration;
+			if (lrdirection_ != LRDirection::kRight) {
+				lrdirection_ = LRDirection::kRight;
+				turnInitialRotationY_ = worldTransform_.rotation_.y;
+				turnTimer_ = kTurnTime;
+			}
+		} else if (Input::GetInstance()->PushKey(DIK_LEFT)) {
+			if (velocity_.x > 0.0f) {
+				velocity_.x *= (1.0f - kAttenuation);
+			}
+			if (lrdirection_ != LRDirection::kLeft) {
+				lrdirection_ = LRDirection::kLeft;
+				turnInitialRotationY_ = worldTransform_.rotation_.y;
+				turnTimer_ = kTurnTime;
+			}
+			acceleration.x = -kAcceleration;
+		}
+		velocity_ += acceleration;
+		velocity_.x = std::clamp(velocity_.x, -kLimitRunSpeed, kLimitRunSpeed);
+	} else {
+		velocity_.x *= (1.0f - kAttenuation);
 	}
 	// 衝突判定
 	CollisionMapInfo collisionMapInfo;
@@ -282,24 +281,24 @@ void Player::Update() {
 	GroundCollided(collisionMapInfo);
 	WallCollided(collisionMapInfo);
 
-	bool landing = false;
-	if (velocity_.y < 0.0f) {
-		if (worldTransform_.translation_.y <= 2.0f) {
-			landing = true;
+	//bool landing = false;
+	//if (velocity_.y < 0.0f) {
+		if (worldTransform_.translation_.y <= -4.0f) {
+			isDead_ = true;
 		}
-	} 
-	if (onGround_) {
-		if (velocity_.y > 0.0f) {
-			onGround_ = false;
-		} 
-	} else {
-		if (landing) {
-			worldTransform_.translation_.y = 2.0f;
-			velocity_.x *= (1.0f - kAttenuation);
-			velocity_.y = 0.0f;
-			onGround_ = true;
-		}
-	}
+	//} 
+	//if (onGround_) {
+	//	if (velocity_.y > 0.0f) {
+	//		onGround_ = false;
+	//	} 
+	//} else {
+	//	if (landing) {
+	//		worldTransform_.translation_.y = 2.0f;
+	//		velocity_.x *= (1.0f - kAttenuation);
+	//		velocity_.y = 0.0f;
+	//		onGround_ = true;
+	//	}
+	//}
 	// 回転
 	if (turnTimer_ > 0.0f) {
 		turnTimer_ -= 1 / 60.0f;

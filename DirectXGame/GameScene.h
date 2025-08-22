@@ -24,7 +24,7 @@ public:
 	Mapchip* mapchipField_ = nullptr;
 	CameraController* cameraController_ = nullptr;
 	std::list<Enemy*> enemies_;
-	static inline const int enemiesCount = 10;
+	static inline const int enemiesCount = 1;
 	DeathParticles* deathParticles_ = nullptr;
 	Collision collision_;
 	enum class Phase {

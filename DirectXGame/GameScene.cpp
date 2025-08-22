@@ -246,7 +246,7 @@ void GameScene::Update() {
 		enemy->Update();
 	}
 	skydome_->Update();
-
+	skydome_->
 }
 void GameScene::Draw() {
 
