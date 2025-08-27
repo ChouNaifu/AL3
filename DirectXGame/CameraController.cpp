@@ -15,7 +15,7 @@ void CameraController::Initialize(Camera& camera) {
 	camera_ = &camera;
 	camera_->Initialize();
 	camera_->farZ = 2000.0f;
-	movableArea_ = {21.0f, 100.0f, 11.0f, 1000.0f};
+	movableArea_ = {21.0f, 5000.0f, 11.0f, 100.0f};
 }
 
 void CameraController::Update() {
@@ -31,10 +31,8 @@ void CameraController::Update() {
 	camera_->translation_.y = std::clamp(camera_->translation_.y, 
 		targetWorldTransform.translation_.y + margin.bottom, 
 		targetWorldTransform.translation_.y + margin.top);
-	//fuck(加藤剛志より)
 	camera_->translation_.x = std::clamp(camera_->translation_.x, movableArea_.left, movableArea_.right);
 	camera_->translation_.y = std::clamp(camera_->translation_.y, movableArea_.bottom, movableArea_.top);
-	//sex(加藤剛志より)
 	camera_->UpdateMatrix();
 }
 

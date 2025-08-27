@@ -37,6 +37,7 @@ public:
 	KamataEngine::WorldTransform& GetWorldTransform() { return worldTransform_; }
 	const KamataEngine::Vector3& GetVelocity() const { return velocity_; }
 	void SetMapchipField(Mapchip* mapchipField) { mapchipField_ = mapchipField; }
+	void SetWorldPositionX(float pos) { worldTransform_.translation_.x = pos; }
 
 	enum class MovePattern {
 		CosWave,

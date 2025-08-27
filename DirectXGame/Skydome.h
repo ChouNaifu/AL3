@@ -12,6 +12,8 @@ public:
 	void Initialize(KamataEngine::Camera* camera);
 	void Update();
 	void Draw();
+	float GetPositionX() const { return worldTransform_.translation_.x; }
+	void SetPosition(const KamataEngine::Vector3& position) { worldTransform_.translation_ = position; }
 
 private:
 	KamataEngine::WorldTransform worldTransform_ = {};

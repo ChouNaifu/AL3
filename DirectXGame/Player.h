@@ -28,12 +28,12 @@ private:
 	uint32_t soundDataHandle_ = 0;
 	uint32_t voiceHandle_ = 0;
 	KamataEngine::Vector3 velocity_ = {};
-	static inline const float kAcceleration = 0.05f;
+	float kAcceleration = 0.2f;
 	static inline const float kAttenuation = 0.2f;
-	static inline const float kLimitRunSpeed = 0.5f;
+	static inline const float kLimitRunSpeed = 0.8f;
 	static inline const float kGravityAcceleration = 0.1f;
-	static inline const float kLimitFallSpeed = 3.0f;
-	static inline const float kJumpAcceleration = 1.25f;
+	static inline const float kLimitFallSpeed = 0.33f;
+	static inline const float kJumpAcceleration = 0.02f;
 	static inline const float kWidth = 1.6f;
 	static inline const float kHeight = 1.6f;
 	static inline const float kBlank = 0.5f;

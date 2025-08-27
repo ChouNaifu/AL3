@@ -7,7 +7,7 @@ void TitleScene::Initialize() {
 	camera_ = new Camera();
 	camera_->Initialize();
 
-	modelTitle_ = Model::CreateFromOBJ("robot");
+	modelTitle_ = Model::CreateFromOBJ("title");
 	worldTransform_.Initialize();
 
 	fade_ = new Fade();

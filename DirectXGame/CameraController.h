@@ -25,8 +25,8 @@ private:
 	KamataEngine::Camera* camera_;
 	KamataEngine::Vector3 cameraTarget_;
 	KamataEngine::Vector3 targetOffset_ = {0.0f, 0.0f, -30.0f};
-	Rect movableArea_ = {0.0f, 100, 0.0f, 100.0f};	
-	static inline const float kInterpolationRate = 0.1f;	
+	Rect movableArea_ = {0.0f, 100, 0.0f, 100.0f};
+	static inline const float kInterpolationRate = 0.1f;
 	static inline const float kVelocityBias = 10;
 	static inline const Rect margin = {-10.0f, 10.0f, -10.0f, 10.0f};
 	//KamataEngine::DebugCamera* debugCamera_ = nullptr;

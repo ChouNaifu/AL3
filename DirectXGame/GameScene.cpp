@@ -68,6 +68,8 @@ void GameScene::Initialize() {
 	AxisIndicator::GetInstance()->SetVisible(true);
 	AxisIndicator::GetInstance()->SetTargetCamera(&debugCamera_->GetCamera());
 #pragma endregion
+	time_t currentTime = time(nullptr);
+	srand(static_cast<unsigned int>(currentTime));
 
 	mapchipField_ = new Mapchip;
 	mapchipField_->LoadMapchipCsv("Resources/map/mapchip.csv");
@@ -81,10 +83,24 @@ void GameScene::Initialize() {
 	fade_ = new Fade();
 	fade_->Initialize();
 	fade_->Start(Fade::Status::FadeIn, 1.0f);
-
+	
 	for (int32_t i = 0; i < enemiesCount; ++i) {
 		Enemy* newEnemy = new Enemy();
-		Vector3 enemyPosition = mapchipField_->GetMapchipPositionByIndex(10 + i, 9);
+		Vector3 enemyPosition = mapchipField_->GetMapchipPositionByIndex(rand() % 10 + 20, rand() % 9);
+		newEnemy->Initialize(&camera_, enemyPosition);
+		enemies_.push_back(newEnemy);
+		newEnemy->SetMapchipField(mapchipField_);
+		if (i % 3 == 0) {
+			newEnemy->movePattern_ = Enemy::MovePattern::CosWave;
+		} else if (i % 3 == 1) {
+			newEnemy->movePattern_ = Enemy::MovePattern::Zigzag;
+		} else if (i % 3 == 2) {
+			newEnemy->movePattern_ = Enemy::MovePattern::SinWave;
+		}
+	}
+	for (int32_t i = 0; i < enemiesCount; ++i) {
+		Enemy* newEnemy = new Enemy();
+		Vector3 enemyPosition = mapchipField_->GetMapchipPositionByIndex(rand() % 10 + 20, rand() % 9);
 		newEnemy->Initialize(&camera_, enemyPosition);
 		enemies_.push_back(newEnemy);
 		newEnemy->SetMapchipField(mapchipField_);
@@ -244,9 +260,14 @@ void GameScene::Update() {
 
 	for (Enemy* enemy : enemies_) {
 		enemy->Update();
+		if (enemy->GetWorldPosition().x < player_->GetWorldPosition().x - 30.0f) {
+			enemy->SetWorldPositionX(player_->GetWorldPosition().x + 30.0f);
+		}
 	}
-	skydome_->Update();
-	skydome_->
+	skydome_->Update();	
+	if (player_->GetWorldPosition().x - skydome_->GetPositionX() > 300.0f) {
+		skydome_->SetPosition(Vector3{player_->GetWorldPosition().x + 100.0f, 0.0f, 0.0f});
+	}
 }
 void GameScene::Draw() {
 

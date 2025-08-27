@@ -28,7 +28,7 @@ public:
 	void Update();
 	static inline const float kBlockWidth = 2.0f;
 	static inline const float kBlockHeight = 2.0f;
-	static inline const uint32_t kNumBlockHorizontal = 26;
+	static inline const uint32_t kNumBlockHorizontal = 900;
 	static inline const uint32_t kNumBlockVertical = 11;
 	struct IndexSet {
 		uint32_t xIndex;

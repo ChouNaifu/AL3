@@ -12,11 +12,10 @@ void Skydome::Initialize(KamataEngine::Camera* camera) {
 	camera_ = camera;
 	model_ = Model::CreateFromOBJ("skydome", true);
 	worldTransform_.Initialize();
-
 }
 
 void Skydome::Update() { 
-	worldTransform_.TransferMatrix(); 
+	worldTransform_.UpdateMatrix();
 }
 
 void Skydome::Draw() { 
