@@ -7,7 +7,7 @@
 enum class MapchipType {
 	None,
 	Wall,
-	//Goal,
+	Goal,
 	//Start,
 };
 

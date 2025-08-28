@@ -14,12 +14,12 @@ Player::Player() {}
 Player::~Player() {}
 
 void Player::Initialize(Model* model, Camera* camera, const Vector3& position) { 
-   assert(model); 
+   //assert(model); 
    model_ = model;
    worldTransform_.Initialize();
    worldTransform_.translation_ = position;
    worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2.0f;
-   assert(camera);
+   //assert(camera);
    camera_ = camera;
 }
 
@@ -231,7 +231,7 @@ AABB Player::GetAABB() const {
 
 void Player::OnCollision(const Enemy* enemy) {
 	(void)enemy;
-	isDead_ = true;
+	life_ -= 2;
 }
 	
 void Player::Update() {
@@ -279,9 +279,17 @@ void Player::Update() {
 
 	//bool landing = false;
 	//if (velocity_.y < 0.0f) {
-	if (worldTransform_.translation_.y <= -2.0f || worldTransform_.translation_.y >= 22.0f) {
-			isDead_ = true;
-		}
+	if (life_ == 0) {
+		isDead_ = true;
+	}
+
+	if (worldTransform_.translation_.y <= -2.0f || worldTransform_.translation_.y >= 24.0f) {
+		isDead_ = true;
+	}
+	if (worldTransform_.translation_.x >= 2046.0f) {
+		Audio::GetInstance()->PlayWave(soundDataHandle_, false);
+		isDead_ = true;
+	}
 	//} 
 	//if (onGround_) {
 	//	if (velocity_.y > 0.0f) {

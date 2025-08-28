@@ -31,7 +31,7 @@ void Enemy::Initialize(KamataEngine::Camera* camera, const KamataEngine::Vector3
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = position;	
 	worldTransform_.rotation_.y = std::numbers::pi_v<float> * 1.5f;
-	assert(camera);
+	//assert(camera);
 	camera_ = camera;
 
 	velocity_ = Vector3{-kSpeed, 0.0f, 0.0f};

@@ -42,6 +42,7 @@ private:
 	float turnInitialRotationY_ = 0.0f;
 	float turnTimer_ = 0.0f;
 	static inline const float kTurnTime = 0.3f;
+	uint32_t life_ = 100;
 
 	bool onGround_ = true;
 	bool isDead_ = false;
@@ -88,6 +89,8 @@ public:
 	float GetPlayerHeight() const { return kHeight; }
 	float GetPlayerWidth() const { return kWidth; }
 	AABB GetAABB() const;
+	uint32_t GetLife() const { return life_; }
+	void SetLife(uint32_t life) { life_ = life; }
 	void OnCollision(const Enemy* enemy);
 
 	bool IsDead() const { return isDead_; }

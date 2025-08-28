@@ -47,6 +47,7 @@ private:
 	float inputFloat3[3] = {0.0f, 0.0f, 0.0f};
 	bool isDebugCameraActive_ = false;
 	std::vector < std::vector < KamataEngine::WorldTransform* >> worldTransformBlocks_;
+	std::vector < std::vector < KamataEngine::WorldTransform* >> worldTransformBlocks2_;
 
 	KamataEngine::Sprite* sprite_ = nullptr;
 	KamataEngine::Model* model_ = nullptr;

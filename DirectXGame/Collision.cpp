@@ -48,6 +48,7 @@ void Collision::CheckAllCollision() {
 		if (AABBUtil::CheckAABBCollision(aabb1, aabb3)) {
 			player_->OnCollision(enemy);
 			enemy->OnCollision(player_);
+			player_->SetLife(0);
 		}
 	}
 

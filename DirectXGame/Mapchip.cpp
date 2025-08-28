@@ -17,7 +17,7 @@ namespace {
 std::map<std::string, MapchipType> mapchipTable = {
     {"0", MapchipType::None },
     {"1", MapchipType::Wall },
-    //{"2", MapchipType::Goal },
+    {"2", MapchipType::Goal },
     //{"3", MapchipType::Start},
 };
 }

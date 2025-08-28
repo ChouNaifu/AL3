@@ -41,6 +41,12 @@ GameScene::~GameScene() {
 		}
 	}
 	worldTransformBlocks_.clear();
+	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks2_) {
+		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+			delete worldTransformBlock;
+		}
+	}
+	worldTransformBlocks2_.clear();
 }
 
 
@@ -49,13 +55,13 @@ void GameScene::Initialize() {
 
 	
 #pragma region Setup
-	textureHandle_ = TextureManager::Load("uvChecker.png"); 
+	textureHandle_ = TextureManager::Load("healthbar.png"); 
 
 	soundDataHandle_ = Audio::GetInstance()->LoadWave("fanfare.wav");
 
 	voiceHandle_ = Audio::GetInstance()->PlayWave(soundDataHandle_, false);
 
-	sprite_ = Sprite::Create(textureHandle_, {100, 50});
+	sprite_ = Sprite::Create(textureHandle_, {15, 20});
 	model_ = Model::CreateFromOBJ("robot", true);
 	blockModel_ = Model::CreateFromOBJ("cube", true);
 	deathParticlesModel_ = Model::CreateFromOBJ("particle", true);
@@ -66,10 +72,10 @@ void GameScene::Initialize() {
 
 	PrimitiveDrawer::GetInstance()->SetCamera(&camera_);
 
-	debugCamera_ = new DebugCamera(1280, 720);
+	//debugCamera_ = new DebugCamera(1280, 720);
 
-	AxisIndicator::GetInstance()->SetVisible(true);
-	AxisIndicator::GetInstance()->SetTargetCamera(&debugCamera_->GetCamera());
+	//AxisIndicator::GetInstance()->SetVisible(true);
+	//AxisIndicator::GetInstance()->SetTargetCamera(&debugCamera_->GetCamera());
 #pragma endregion
 	time_t currentTime = time(nullptr);
 	srand(static_cast<unsigned int>(currentTime));
@@ -144,6 +150,20 @@ void GameScene::GenerateMap() {
 			}
 		}
 	}
+	worldTransformBlocks2_.resize(kNumBlockVirtical);
+	for (uint32_t i = 0; i < kNumBlockVirtical; i++) {
+		worldTransformBlocks2_[i].resize(kNumBlockHorizontal);
+	}
+	for (uint32_t y = 0; y < kNumBlockVirtical; y++) {
+		for (uint32_t x = 0; x < kNumBlockHorizontal; x++) {
+			if (mapchipField_->GetMapchipTypeByIndex(x, y) == MapchipType::Goal) {
+				WorldTransform* worldTransform2 = new WorldTransform();
+				worldTransform2->Initialize();
+				worldTransformBlocks2_[y][x] = worldTransform2;
+				worldTransformBlocks2_[y][x]->translation_ = mapchipField_->GetMapchipPositionByIndex(x, y);
+			}
+		}
+	}
 }
 
 void GameScene::ChangePhase() {
@@ -214,16 +234,23 @@ void GameScene::Update() {
 		break;
 	}
 #pragma region Update
-	Vector2 position = sprite_->GetPosition();
+	//Vector2 position = sprite_->GetPosition();
 	//position.x += 2.0f;
 	//position.y += 1.0f;
 	//sprite_->SetPosition(position);
-	//sprite_->SetScale({2.0f, 2.0f});
+	sprite_->SetSize({256.0f * (static_cast<float>(player_->GetLife())/100), 44.0f});
 	//sprite_->SetRotation(45.0f);
 	//sprite_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
 
 
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
+		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+			if (!worldTransformBlock)
+				continue;
+			worldTransformBlock->UpdateMatrix();
+		}
+	}
+	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks2_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
 			if (!worldTransformBlock)
 				continue;
@@ -271,9 +298,6 @@ void GameScene::Update() {
 	for (Enemy* enemy : enemies2_) {
 		enemy->Update();
 	}
-	if (player_->GetWorldPosition().x > 500.0f) {
-		//enemiesCount += 3;
-	}
 
 	skydome_->Update();	
 	if (player_->GetWorldPosition().x - skydome_->GetPositionX() > 300.0f) {
@@ -286,7 +310,9 @@ void GameScene::Draw() {
 	// Drawing 2D Sprite
 	Sprite::PreDraw(dxCommon->GetCommandList());
 	//
-	//sprite_->Draw();
+	if (!deathParticles_) {
+		sprite_->Draw();
+	}
 	//
 	Sprite::PostDraw();
 
@@ -311,6 +337,13 @@ void GameScene::Draw() {
 			if (!worldTransformBlock)
 				continue;
 			blockModel_->Draw(*worldTransformBlock, camera_);
+		}
+	}
+	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks2_) {
+		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
+			if (!worldTransformBlock)
+				continue;
+			model_->Draw(*worldTransformBlock, camera_);
 		}
 	}
 	//
