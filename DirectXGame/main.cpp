@@ -70,7 +70,7 @@ void DrawScene() {
     // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	//Engine Initialize
-	KamataEngine::Initialize(L"GC2A_07_チョウ_ナイーフ_SpaceSpeeplechase");
+	KamataEngine::Initialize(L"GC2A_07_チョウ_ナイーフ_SpaceSteeplechase");
 	//DirectX Function Aquire
 	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
 
