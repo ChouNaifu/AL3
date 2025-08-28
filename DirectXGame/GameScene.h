@@ -25,7 +25,8 @@ public:
 	CameraController* cameraController_ = nullptr;
 
 	std::list<Enemy*> enemies_;
-	static inline const int enemiesCount = 12;
+	std::list<Enemy*> enemies2_;
+	static inline const int enemiesCount = 6;
 
 	DeathParticles* deathParticles_ = nullptr;
 	Collision collision_;

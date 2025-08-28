@@ -15,7 +15,7 @@ void CameraController::Initialize(Camera& camera) {
 	camera_ = &camera;
 	camera_->Initialize();
 	camera_->farZ = 2000.0f;
-	movableArea_ = {21.0f, 5000.0f, 11.0f, 100.0f};
+	movableArea_ = {21.0f, 5000.0f, 11.0f, 11.0f};
 }
 
 void CameraController::Update() {

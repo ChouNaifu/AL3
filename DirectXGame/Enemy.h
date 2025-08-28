@@ -37,12 +37,15 @@ public:
 	KamataEngine::WorldTransform& GetWorldTransform() { return worldTransform_; }
 	const KamataEngine::Vector3& GetVelocity() const { return velocity_; }
 	void SetMapchipField(Mapchip* mapchipField) { mapchipField_ = mapchipField; }
-	void SetWorldPositionX(float pos) { worldTransform_.translation_.x = pos; }
+	void SetWorldPosition(KamataEngine::Vector3 pos) { worldTransform_.translation_ = pos; }
+
+	void Respawn(KamataEngine::Vector3 position);
 
 	enum class MovePattern {
 		CosWave,
 		SinWave,
 		Zigzag,
+		Back,
 	};
 	MovePattern movePattern_ = MovePattern::CosWave;
 

@@ -41,17 +41,24 @@ void Enemy::Initialize(KamataEngine::Camera* camera, const KamataEngine::Vector3
 
 void Enemy::Update() {
 
-	worldTransform_.translation_ += velocity_;
 	walkTimer_ += 1.0f / 60.0f;
 
 	switch (movePattern_) {
 	case MovePattern::CosWave:
+		worldTransform_.translation_ += velocity_;
 		waveY = std::cos(walkTimer_ * (2.0f * std::numbers::pi_v<float> / kWalkMotionTime)) * amplitude;
 		break;
 	case MovePattern::SinWave:		
+		worldTransform_.translation_ += velocity_;
 		waveY = std::sin(walkTimer_ * (2.0f * std::numbers::pi_v<float> / kWalkMotionTime)) * amplitude;
 		break;
 	case MovePattern::Zigzag:
+		worldTransform_.translation_ += velocity_;
+		waveY = std::sin(walkTimer_ * (2.0f * std::numbers::pi_v<float> / 0.5f)) * 0.3f;
+		break;
+	case MovePattern::Back:
+		worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2.0f;
+		worldTransform_.translation_ += Vector3{0.2f, 0.0f, 0.0f};
 		waveY = std::sin(walkTimer_ * (2.0f * std::numbers::pi_v<float> / 0.5f)) * 0.3f;
 		break;
 	}
@@ -61,4 +68,8 @@ void Enemy::Update() {
 
 void Enemy::Draw() {
 	model_->Draw(worldTransform_, *camera_); 
+}
+
+void Enemy::Respawn(KamataEngine::Vector3 position) { 
+	worldTransform_.translation_ = position;
 }

@@ -30,6 +30,10 @@ GameScene::~GameScene() {
 		delete enemy;
 	}
 	enemies_.clear();
+	for (Enemy* enemy : enemies2_) {
+		delete enemy;
+	}
+	enemies2_.clear();
 
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
@@ -48,9 +52,8 @@ void GameScene::Initialize() {
 	textureHandle_ = TextureManager::Load("uvChecker.png"); 
 
 	soundDataHandle_ = Audio::GetInstance()->LoadWave("fanfare.wav");
-	Audio::GetInstance()->PlayWave(soundDataHandle_);
 
-	voiceHandle_ = Audio::GetInstance()->PlayWave(soundDataHandle_, true);
+	voiceHandle_ = Audio::GetInstance()->PlayWave(soundDataHandle_, false);
 
 	sprite_ = Sprite::Create(textureHandle_, {100, 50});
 	model_ = Model::CreateFromOBJ("robot", true);
@@ -86,7 +89,7 @@ void GameScene::Initialize() {
 	
 	for (int32_t i = 0; i < enemiesCount; ++i) {
 		Enemy* newEnemy = new Enemy();
-		Vector3 enemyPosition = mapchipField_->GetMapchipPositionByIndex(rand() % 10 + 20, rand() % 9);
+		Vector3 enemyPosition = mapchipField_->GetMapchipPositionByIndex(rand() % 50 + 20, rand() % 8+2);
 		newEnemy->Initialize(&camera_, enemyPosition);
 		enemies_.push_back(newEnemy);
 		newEnemy->SetMapchipField(mapchipField_);
@@ -98,19 +101,13 @@ void GameScene::Initialize() {
 			newEnemy->movePattern_ = Enemy::MovePattern::SinWave;
 		}
 	}
-	for (int32_t i = 0; i < enemiesCount; ++i) {
-		Enemy* newEnemy = new Enemy();
-		Vector3 enemyPosition = mapchipField_->GetMapchipPositionByIndex(rand() % 10 + 20, rand() % 9);
-		newEnemy->Initialize(&camera_, enemyPosition);
-		enemies_.push_back(newEnemy);
-		newEnemy->SetMapchipField(mapchipField_);
-		if (i % 3 == 0) {
-			newEnemy->movePattern_ = Enemy::MovePattern::CosWave;
-		} else if (i % 3 == 1) {
-			newEnemy->movePattern_ = Enemy::MovePattern::Zigzag;
-		} else if (i % 3 == 2) {
-			newEnemy->movePattern_ = Enemy::MovePattern::SinWave;
-		}
+	for (int32_t i = 0; i < 9; ++i) {
+		Enemy* newEnemy2 = new Enemy();
+		Vector3 enemyPosition = mapchipField_->GetMapchipPositionByIndex(0, i + 1);
+		newEnemy2->Initialize(&camera_, Vector3{enemyPosition.x - 20.0f, enemyPosition.y - 1.0f, enemyPosition.z});
+		enemies2_.push_back(newEnemy2);
+		newEnemy2->SetMapchipField(mapchipField_);
+		newEnemy2->movePattern_ = Enemy::MovePattern::Back;
 	}
 
 	skydome_ = new Skydome();
@@ -124,6 +121,7 @@ void GameScene::Initialize() {
 
 	collision_.SetPlayer(player_);
 	collision_.SetEnemies(&enemies_);
+	collision_.SetEnemies2(&enemies2_);
 	
 }
 
@@ -224,9 +222,6 @@ void GameScene::Update() {
 	//sprite_->SetRotation(45.0f);
 	//sprite_->SetColor({1.0f, 1.0f, 1.0f, 1.0f});
 
-	if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
-		Audio::GetInstance()->StopWave(voiceHandle_);
-	}
 
 	for (std::vector<WorldTransform*>& worldTransformBlockLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockLine) {
@@ -257,13 +252,29 @@ void GameScene::Update() {
 
 #endif // DEBUG
 #pragma endregion Update
-
+		
+	int32_t targetEnemyCount = 6 + static_cast<int32_t>(player_->GetWorldPosition().x / 200.0f);
+	while (enemies_.size() < targetEnemyCount) {
+		Enemy* newEnemy = new Enemy();
+		Vector3 enemyPosition = mapchipField_->GetMapchipPositionByIndex(rand() % 10 + 20, rand() % 8 + 2);
+		newEnemy->Initialize(&camera_, Vector3{enemyPosition.x + player_->GetWorldPosition().x + 30.0f, enemyPosition.y, enemyPosition.z});			enemies_.push_back(newEnemy);
+		newEnemy->SetMapchipField(mapchipField_);
+		newEnemy->movePattern_ = Enemy::MovePattern::CosWave;
+	}
 	for (Enemy* enemy : enemies_) {
 		enemy->Update();
 		if (enemy->GetWorldPosition().x < player_->GetWorldPosition().x - 30.0f) {
-			enemy->SetWorldPositionX(player_->GetWorldPosition().x + 30.0f);
+			Vector3 enemyPosition = mapchipField_->GetMapchipPositionByIndex(rand() % 50 + 20, rand() % 8 + 2);
+			enemy->Respawn(Vector3{enemyPosition.x + player_->GetWorldPosition().x, enemyPosition.y, enemyPosition.z});
 		}
 	}
+	for (Enemy* enemy : enemies2_) {
+		enemy->Update();
+	}
+	if (player_->GetWorldPosition().x > 500.0f) {
+		//enemiesCount += 3;
+	}
+
 	skydome_->Update();	
 	if (player_->GetWorldPosition().x - skydome_->GetPositionX() > 300.0f) {
 		skydome_->SetPosition(Vector3{player_->GetWorldPosition().x + 100.0f, 0.0f, 0.0f});
@@ -287,6 +298,9 @@ void GameScene::Draw() {
 	player_->Draw();
 	skydome_->Draw();
 	for (Enemy* enemy : enemies_) {
+		enemy->Draw();
+	}
+	for (Enemy* enemy : enemies2_) {
 		enemy->Draw();
 	}
 	if (deathParticles_) {

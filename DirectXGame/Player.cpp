@@ -245,40 +245,29 @@ void Player::Update() {
 			velocity_.y = std::max(velocity_.y, -kLimitFallSpeed);
 		}
 	}
-	if (Input::GetInstance()->PushKey(DIK_RIGHT) || Input::GetInstance()->PushKey(DIK_LEFT)) {
-		Vector3 acceleration = {};
-		//if (Input::GetInstance()->PushKey(DIK_RIGHT)) {
-		//	if (velocity_.x < 0.0f) {
-		//		velocity_.x *= (1.0f - kAttenuation);
-		//	}
-		//	acceleration.x = kAcceleration;
-		//	if (lrdirection_ != LRDirection::kRight) {
-		//		lrdirection_ = LRDirection::kRight;
-		//		turnInitialRotationY_ = worldTransform_.rotation_.y;
-		//		turnTimer_ = kTurnTime;
-		//	}
-		//} else if (Input::GetInstance()->PushKey(DIK_LEFT)) {
-		//	if (velocity_.x > 0.0f) {
-		//		velocity_.x *= (1.0f - kAttenuation);
-		//	}
-		//	if (lrdirection_ != LRDirection::kLeft) {
-		//		lrdirection_ = LRDirection::kLeft;
-		//		turnInitialRotationY_ = worldTransform_.rotation_.y;
-		//		turnTimer_ = kTurnTime;
-		//	}
-		//	acceleration.x = -kAcceleration;
-		//}
-		
-	} else {
-		velocity_.x *= (1.0f - kAttenuation);
-	}
+
 	kAcceleration = Lerp(kAcceleration, 0.8f, 0.0005f);
-	velocity_.x = kAcceleration;
+
+	if (Input::GetInstance()->PushKey(DIK_LEFT)) {
+		if (lrdirection_ != LRDirection::kLeft) {
+			lrdirection_ = LRDirection::kLeft;
+			turnInitialRotationY_ = worldTransform_.rotation_.y;
+			turnTimer_ = kTurnTime;
+		}
+		velocity_.x *= 0.99f;
+	} else {
+		if (lrdirection_ != LRDirection::kRight) {
+			lrdirection_ = LRDirection::kRight;
+			turnInitialRotationY_ = worldTransform_.rotation_.y;
+			turnTimer_ = kTurnTime;
+		}
+		velocity_.x = kAcceleration;
+	}
 	velocity_.x = std::clamp(velocity_.x, -kLimitRunSpeed, kLimitRunSpeed);
-	 ImGui::Begin("Debug1");
-	ImGui::Text("kAcceleration %f", kAcceleration);
-	 ImGui::Text("velocity %f", velocity_.x);
-	 ImGui::End();
+	// ImGui::Begin("Debug1");
+	// ImGui::Text("world %f", worldTransform_.translation_.x);
+	// ImGui::Text("velocity %f", velocity_.x);
+	// ImGui::End();
 	// 衝突判定
 	CollisionMapInfo collisionMapInfo;
 	collisionMapInfo.movement = velocity_;
@@ -290,7 +279,7 @@ void Player::Update() {
 
 	//bool landing = false;
 	//if (velocity_.y < 0.0f) {
-		if (worldTransform_.translation_.y <= -4.0f) {
+	if (worldTransform_.translation_.y <= -2.0f || worldTransform_.translation_.y >= 22.0f) {
 			isDead_ = true;
 		}
 	//} 

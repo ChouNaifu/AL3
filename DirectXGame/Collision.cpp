@@ -30,10 +30,11 @@ void Collision::CheckAllCollision() {
 	// Player to Enemy collision check
 	//SetPlayer(GameScene::GetInstance()->player_);
 	//SetEnemies(GameScene::GetInstance()->player_);
- 	if (!player_ || !enemies_)
+	if (!player_ || !enemies_ || !enemies2_)
 	return;
 	AABB aabb1;
 	AABB aabb2;
+	AABB aabb3;
 	aabb1 = player_->GetAABB();
 	for (Enemy* enemy : *enemies_) {
 		 aabb2 = enemy->GetAABB();
@@ -41,6 +42,13 @@ void Collision::CheckAllCollision() {
 			player_->OnCollision(enemy);
 			enemy->OnCollision(player_);
 		}		
+	}
+	for (Enemy* enemy : *enemies2_) {
+		aabb3 = enemy->GetAABB();
+		if (AABBUtil::CheckAABBCollision(aabb1, aabb3)) {
+			player_->OnCollision(enemy);
+			enemy->OnCollision(player_);
+		}
 	}
 
 #pragma endregion CheckP2E
